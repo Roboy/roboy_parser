@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import edu.stanford.nlp.sempre.Json;
 import fig.basic.Evaluation;
 import fig.basic.IOUtils;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 
 public class SimulationAnalyzer {
@@ -29,11 +29,11 @@ public class SimulationAnalyzer {
   public synchronized static void addStats(Map<String, Object> query, String jsonResponse) {
     Map<String, Object> stats = getStats(jsonResponse);
     Map<String, Object> line = new LinkedHashMap<String, Object>(query);
-    LogInfo.logs("stats: %s", stats);
+    LogController.logs("stats: %s", stats);
     if (stats == null) {
-      LogInfo.logs("No stats");
-      LogInfo.log(query);
-      LogInfo.log(jsonResponse);
+      LogController.logs("No stats");
+      LogController.log(query);
+      LogController.log(jsonResponse);
       return;
     }
 

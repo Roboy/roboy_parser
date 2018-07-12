@@ -3,7 +3,8 @@ package edu.stanford.nlp.sempre.roboy;
 import java.util.*;
 import com.google.common.collect.Lists;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
-import fig.basic.*;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import edu.stanford.nlp.sempre.*;
 
 /**
@@ -59,7 +60,7 @@ class SparqlBlock implements SparqlExpr {
         }
       }
     } catch(Exception e) {
-      LogInfo.errors("Exception: %s", e);
+      LogController.errors("Exception: %s", e);
     }
 
     if (!correct_prefix &&!SparqlStatement.isOperator(property) && !SparqlStatement.isSpecialFunction(property) && !SparqlStatement.isIndependent(property))

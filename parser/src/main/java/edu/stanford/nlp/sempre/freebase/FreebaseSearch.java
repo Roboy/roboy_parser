@@ -3,7 +3,8 @@ package edu.stanford.nlp.sempre.freebase;
 import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.cache.StringCache;
 import edu.stanford.nlp.sempre.cache.StringCacheUtils;
-import fig.basic.*;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import java.io.*;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -117,7 +118,7 @@ public class FreebaseSearch {
       } catch (SocketTimeoutException e) {
         return new ServerResponse(ErrorValue.timeout);
       } catch (IOException e) {
-        LogInfo.errors("Server exception: %s", e);
+        LogController.errors("Server exception: %s", e);
         if (e.toString().contains("HTTP response code: 408"))
           return new ServerResponse(ErrorValue.server408);
         if (e.toString().contains("HTTP response code: 500"))
@@ -141,7 +142,7 @@ public class FreebaseSearch {
 
     watch.stop();
     response.timeMs = watch.getCurrTimeLong();
-    LogInfo.logs("FreebaseSearch %s => %s results (cached=%s)", query, response.entries.size(), response.cached);
+    LogController.logs("FreebaseSearch %s => %s results (cached=%s)", query, response.entries.size(), response.cached);
     return response;
   }
 
@@ -156,6 +157,6 @@ public class FreebaseSearch {
     String query = StrUtils.join(args, " ");
     query = "obama";
     FreebaseSearch search = new FreebaseSearch();
-    LogInfo.logs("%s", search.lookup(query).entries);
+    LogController.logs("%s", search.lookup(query).entries);
   }
 }

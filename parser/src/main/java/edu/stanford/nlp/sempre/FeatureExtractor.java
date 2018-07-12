@@ -2,7 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.util.*;
 
@@ -81,7 +81,7 @@ public class FeatureExtractor {
     for (FeatureComputer featureComputer : featureComputers)
       featureComputer.extractLocal(ex, deriv);
 //    for (String key:deriv.getLocalFeatureVector().toMap().keySet())
-//      LogInfo.logs("Key: %s -> Entry: %s",key,deriv.getAllFeatureVector().get(key));
+//      LogController.logs("Key: %s -> Entry: %s",key,deriv.getAllFeatureVector().get(key));
     StopWatchSet.end();
   }
 
@@ -92,7 +92,7 @@ public class FeatureExtractor {
     for (FeatureComputer featureComputer : featureComputers)
       featureComputer.extractLocal(ex, deriv);
 //    for (String key:deriv.getLocalFeatureVector().toMap().keySet())
-//      LogInfo.logs("Key: %s -> Entry: %s",key,deriv.getAllFeatureVector().get(key));
+//      LogController.logs("Key: %s -> Entry: %s",key,deriv.getAllFeatureVector().get(key));
   }
 
   // Add an indicator for ontology matching

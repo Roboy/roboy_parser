@@ -1,10 +1,11 @@
 package edu.stanford.nlp.sempre;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 
 import java.io.File;
@@ -54,10 +55,10 @@ public class Grammar {
   List<String> statements = new ArrayList<>();
 
   public void read() {
-    LogInfo.begin_track("Grammar.read");
+    LogController.begin_track("Grammar.read");
     read(opts.inPaths);
-    LogInfo.logs("%s rules", rules.size());
-    LogInfo.end_track();
+    LogController.logs("%s rules", rules.size());
+    LogController.end_track();
   }
 
   public void read(String path) { read(Collections.singletonList(path)); }
@@ -81,17 +82,17 @@ public class Grammar {
     for (Rule rule : rules) {
       for (String item : rule.rhs) {
         if (Rule.isCat(item) && !defined.contains(item)) {
-          LogInfo.warnings("Category not defined in the grammar: %s; used in rule: %s", item, rule);
+          LogController.warnings("Category not defined in the grammar: %s; used in rule: %s", item, rule);
         }
       }
     }
 
     // Check if all tags are defined in a grammar file
-    LogInfo.logs("Valid tags: %s", validTags);
-    LogInfo.logs("Used tags: %s", new TreeSet<>(opts.tags));
+    LogController.logs("Valid tags: %s", validTags);
+    LogController.logs("Used tags: %s", new TreeSet<>(opts.tags));
     for (String tag : opts.tags) {
       if (!validTags.contains(tag)) {
-        LogInfo.warnings("Tag %s not defined in grammar", tag);
+        LogController.warnings("Tag %s not defined in grammar", tag);
       }
     }
   }
@@ -256,7 +257,7 @@ public class Grammar {
 
   private static String checkCatName(String cat) {
     if (isIntermediate(cat))
-      LogInfo.warnings("Category '%s' starts with '$Intermediate'; please avoid this unless you know what you are doing.");
+      LogController.warnings("Category '%s' starts with '$Intermediate'; please avoid this unless you know what you are doing.");
     return cat;
   }
 
@@ -508,9 +509,9 @@ public class Grammar {
     if (!appliedRuleSem)
       newRules.add(new Rule(rule.lhs, Lists.newArrayList(newRhs), rule.sem).setInfo(rule));
 
-    // LogInfo.begin_track("binarize %s", rule);
-    // for (Rule r : newRules) LogInfo.logs("%s", r);
-    // LogInfo.end_track();
+    // LogController.begin_track("binarize %s", rule);
+    // for (Rule r : newRules) LogController.logs("%s", r);
+    // LogController.end_track();
 
     return newRules;
   }

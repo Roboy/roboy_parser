@@ -1,8 +1,9 @@
 package edu.stanford.nlp.sempre;
 
 import java.util.*;
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 /**
  * Maintain a hierarchy (DAG) over strings.
  *   subtype < type < supertype
@@ -46,7 +47,7 @@ public class SemTypeHierarchy {
 
   // Add standard supertypes of entity
   public void addEntitySupertypes(String type) {
-    // LogInfo.logs("addEntitySupertypes %s", type);
+    // LogController.logs("addEntitySupertypes %s", type);
     addSupertype(type, type);
     addSupertype(type, CanonicalNames.ENTITY);
     addSupertype(type, CanonicalNames.ANY);
@@ -62,7 +63,7 @@ public class SemTypeHierarchy {
     Set<String> set = supertypesMap.get(type);
     if (set == null) {
       if (opts.failOnUnknownTypes)
-        LogInfo.fails("SemTypeHierarchy.getSupertypes: don't know about type %s", type);
+        LogController.fails("SemTypeHierarchy.getSupertypes: don't know about type %s", type);
       addEntitySupertypes(type);
       set = supertypesMap.get(type);
     }
@@ -73,7 +74,7 @@ public class SemTypeHierarchy {
     Set<String> set = subtypesMap.get(type);
     if (set == null) {
       if (opts.failOnUnknownTypes)
-        LogInfo.fails("SemTypeHierarchy.getSubtypes: don't know about type %s", type);
+        LogController.fails("SemTypeHierarchy.getSubtypes: don't know about type %s", type);
       addEntitySupertypes(type);
       set = supertypesMap.get(type);
     }

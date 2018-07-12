@@ -1,6 +1,6 @@
 package edu.stanford.nlp.sempre.cache;
 
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 /**
  * Cache backed by a file.
  *
@@ -77,7 +78,7 @@ public class FileStringCache implements StringCache, LruCallback<String, String>
       }
     }
 
-    LogInfo.logs("Using cache %s (%d entries)", path, cache.size());
+    LogController.logs("Using cache %s (%d entries)", path, cache.size());
 
     if (!readOnly && opts.appendMode)
       out = IOUtils.openOutAppendHard(path);
@@ -95,15 +96,15 @@ public class FileStringCache implements StringCache, LruCallback<String, String>
       return;
 
     if (opts.verbose >= 2) {
-      LogInfo.begin_track("FileStringCache FLUSH (dump mode)");
-      LogInfo.logs("Size: %d", size());
+      LogController.begin_track("FileStringCache FLUSH (dump mode)");
+      LogController.logs("Size: %d", size());
       if (cache instanceof LruMap)
-        LogInfo.logs("Memory: %d", ((LruMap<String, String>) cache).getBytes());
-      LogInfo.logs("Touches: %d", numTouches);
-      LogInfo.logs("Evictions: %d", numEvictions);
-      LogInfo.logs("Evicted keys: %s", keyStats);
-      LogInfo.logs("Evicted values: %s", valStats);
-      LogInfo.end_track();
+        LogController.logs("Memory: %d", ((LruMap<String, String>) cache).getBytes());
+      LogController.logs("Touches: %d", numTouches);
+      LogController.logs("Evictions: %d", numEvictions);
+      LogController.logs("Evicted keys: %s", keyStats);
+      LogController.logs("Evicted values: %s", valStats);
+      LogController.end_track();
     }
 
     PrintWriter dumpOut = IOUtils.openOutHard(this.path + ".tmp");
@@ -154,16 +155,16 @@ public class FileStringCache implements StringCache, LruCallback<String, String>
   }
 
   private void logTrack(String header, String key, String value) {
-    LogInfo.begin_track(header);
-    LogInfo.logs("Key size: %d (%d bytes)", key.length(), MemUsage.getBytes(key));
-    LogInfo.logs("Val size: %d (%d bytes)", value.length(), MemUsage.getBytes(value));
+    LogController.begin_track(header);
+    LogController.logs("Key size: %d (%d bytes)", key.length(), MemUsage.getBytes(key));
+    LogController.logs("Val size: %d (%d bytes)", value.length(), MemUsage.getBytes(value));
     if (cache instanceof LruMap) {
-      LogInfo.logs("Cache size: %d entries (%d bytes of %d)",
+      LogController.logs("Cache size: %d entries (%d bytes of %d)",
           cache.size(),
           ((LruMap) cache).getBytes(),
           ((LruMap) cache).getCapacity());
     }
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   // For tests

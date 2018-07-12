@@ -2,7 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 
 import java.io.PrintWriter;
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 /**
  * The main learning loop.  Goes over a dataset multiple times, calling the
  * parser and updating parameters.
@@ -94,14 +95,14 @@ public class Learner {
    * @param evaluations Evaluations per iteration per group.
    */
   public void learn(int numIters, Map<String, List<Evaluation>> evaluations) {
-    LogInfo.begin_track("Learner.learn()");
+    LogController.begin_track("Learner.learn()");
     // if when we start we have parameters already - need to sort the semantic functions.
     if (!params.isEmpty())
       sortOnFeedback();
     // For each iteration, go through the groups and parse (updating if train).
     for (int iter = 0; iter <= numIters; iter++) {
 
-      LogInfo.begin_track("Iteration %s/%s", iter, numIters);
+      LogController.begin_track("Iteration %s/%s", iter, numIters);
       Execution.putOutput("iter", iter);
 
       // Averaged over all iterations
@@ -128,9 +129,9 @@ public class Learner {
         StopWatchSet.logStats();
         writeParams(iter);
       }
-      LogInfo.end_track();
+      LogController.end_track();
     }
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   private void writeParams(int iter) {
@@ -142,7 +143,7 @@ public class Learner {
   }
 
   public void onlineLearnExample(Example ex) {
-    LogInfo.begin_track("onlineLearnExample: %s derivations", ex.predDerivations.size());
+    LogController.begin_track("onlineLearnExample: %s derivations", ex.predDerivations.size());
     HashMap<String, Double> counts = new HashMap<>();
     for (Derivation deriv : ex.predDerivations) {
       deriv.compatibility = parser.valueEvaluator.getCompatibility(ex.targetValue, deriv.value);
@@ -151,7 +152,7 @@ public class Learner {
     }
     ParserState.computeExpectedCounts(ex.predDerivations, counts);
     params.update(counts);
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   public void onlineLearnExampleByFormula(Example ex, List<Formula> formulas) {
@@ -172,18 +173,18 @@ public class Learner {
     final String prefix = "iter=" + iter + "." + group;
 
     Execution.putOutput("group", group);
-    LogInfo.begin_track_printAll(
+    LogController.begin_track_printAll(
         "Processing %s: %s examples", prefix, examples.size());
-    LogInfo.begin_track("Examples");
+    LogController.begin_track("Examples");
 
     if (opts.numParallelThreads > 1) {
       // Parallelize!
       Parallelizer<Example> paral = new Parallelizer<>(opts.numParallelThreads);
       LearnerParallelProcessor processor = new LearnerParallelProcessor(
           parser, params, prefix, computeExpectedCounts, evaluation);
-      LogInfo.begin_threads();
+      LogController.begin_threads();
       paral.process(examples, processor);
-      LogInfo.end_threads();
+      LogController.end_threads();
 
     } else {
       // Original code (single-threaded)
@@ -194,7 +195,7 @@ public class Learner {
 
         Example ex = examples.get(e);
 
-        LogInfo.begin_track_printAll(
+        LogController.begin_track_printAll(
             "%s: example %s/%s: %s", prefix, e, examples.size(), ex.id);
         ex.log();
         Execution.putOutput("example", e);
@@ -202,9 +203,9 @@ public class Learner {
         ParserState state = parseExample(params, ex, computeExpectedCounts);
         if (computeExpectedCounts) {
           if (opts.checkGradient) {
-            LogInfo.begin_track("Checking gradient");
+            LogController.begin_track("Checking gradient");
             checkGradient(ex, state);
-            LogInfo.end_track();
+            LogController.end_track();
           }
           if (state.expectedCounts!=null)
             SempreUtils.addToDoubleMap(counts, state.expectedCounts);
@@ -217,12 +218,12 @@ public class Learner {
           }
         }
 
-        LogInfo.logs("Current: %s", ex.evaluation.summary());
+        LogController.logs("Current: %s", ex.evaluation.summary());
         evaluation.add(ex.evaluation);
-        LogInfo.logs("Cumulative(%s): %s", prefix, evaluation.summary());
+        LogController.logs("Cumulative(%s): %s", prefix, evaluation.summary());
 
         printLearnerEventsIter(ex, iter, group);
-        LogInfo.end_track();
+        LogController.end_track();
         if (opts.addFeedback && computeExpectedCounts)
           addFeedback(ex);
 
@@ -247,30 +248,30 @@ public class Learner {
     if (opts.sortOnFeedback && computeExpectedCounts)
       sortOnFeedback();
 
-    LogInfo.end_track();
+    LogController.end_track();
     logEvaluationStats(evaluation, prefix);
     evaluation.putOutput(prefix.replace('.', '-'));
     printLearnerEventsSummary(evaluation, iter, group);
     ExampleUtils.writeEvaluationSDF(iter, group, evaluation, examples.size());
-    LogInfo.end_track();
+    LogController.end_track();
     return evaluation;
   }
 
   private void checkGradient(Example ex, ParserState state) {
     double eps = 1e-2;
     for (String feature : state.expectedCounts.keySet()) {
-      LogInfo.begin_track("feature=%s", feature);
+      LogController.begin_track("feature=%s", feature);
       double computedGradient = state.expectedCounts.get(feature);
       Params perturbedParams = this.params.copyParams();
       perturbedParams.getWeights().put(feature, perturbedParams.getWeight(feature) + eps);
       ParserState perturbedState = parseExample(perturbedParams, ex, true);
       double checkedGradient = (perturbedState.objectiveValue - state.objectiveValue) / eps;
-      LogInfo.logs("Learner.checkGradient(): weight=%s, pertWeight=%s, obj=%s, pertObj=%s, feature=%s, computed=%s, checked=%s, diff=%s",
+      LogController.logs("Learner.checkGradient(): weight=%s, pertWeight=%s, obj=%s, pertObj=%s, feature=%s, computed=%s, checked=%s, diff=%s",
               params.getWeight(feature), perturbedParams.getWeight(feature),
               state.objectiveValue, perturbedState.objectiveValue,
               feature,
               computedGradient, checkedGradient, Math.abs(checkedGradient - computedGradient));
-      LogInfo.end_track();
+      LogController.end_track();
     }
   }
 
@@ -295,23 +296,23 @@ public class Learner {
 
   private void updateWeights(Map<String, Double> counts) {
     StopWatchSet.begin("Learner.updateWeights");
-    LogInfo.begin_track("Updating learner weights");
+    LogController.begin_track("Updating learner weights");
     double sum = 0;
     for (double v : counts.values()) sum += v * v;
     if (opts.verbose >= 2)
       SempreUtils.logMap(counts, "gradient");
-    LogInfo.logs("L2 norm: %s", Math.sqrt(sum));
+    LogController.logs("L2 norm: %s", Math.sqrt(sum));
     params.update(counts);
     if (opts.verbose >= 2)
       params.log();
     counts.clear();
-    LogInfo.end_track();
+    LogController.end_track();
     StopWatchSet.end();
   }
 
   // Print summary over all examples
   private void logEvaluationStats(Evaluation evaluation, String prefix) {
-    LogInfo.logs("Stats for %s: %s", prefix, evaluation.summary());
+    LogController.logs("Stats for %s: %s", prefix, evaluation.summary());
     evaluation.logStats(prefix);
     evaluation.putOutput(prefix);
     evaluation.putOutput(prefix.replaceAll("iter=", "").replace('.', '_'));

@@ -2,8 +2,9 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * A Derivation corresponds to the production of a (partial) logical form
@@ -324,7 +325,7 @@ public class Derivation implements SemanticFn.Callable, HasScore {
     if (isExecuted()) return;
     StopWatchSet.begin("Executor.execute");
     if (opts.showExecutions)
-      LogInfo.logs("%s - %s", canonicalUtterance, formula);
+      LogController.logs("%s - %s", canonicalUtterance, formula);
     Executor.Response response = executor.execute(formula, context);
     StopWatchSet.end();
     value = response.value;
@@ -468,7 +469,7 @@ public class Derivation implements SemanticFn.Callable, HasScore {
 
     public boolean compareResult(Derivation deriv1, Derivation deriv2, boolean value) {
         if (deriv1.getValue() == null || deriv2.getValue() == null) return true;
-        LogInfo.logs("%s : %s",deriv1.toString(),deriv2.toString());
+        LogController.logs("%s : %s",deriv1.toString(),deriv2.toString());
       if (!deriv1.getValue().toString().contains("(list)") && !deriv2.getValue().toString().contains("(list)")) return true;
       if (deriv1.getValue().toString().contains("(list)") && deriv2.getValue().toString().contains("(list)")) return true;
       if (!deriv1.getValue().toString().contains("(list)") && deriv2.getValue().toString().contains("(list)")) return value;
@@ -511,11 +512,11 @@ public class Derivation implements SemanticFn.Callable, HasScore {
 
   // for debugging
   public void printDerivationRecursively() {
-    LogInfo.logs("Deriv: %s(%s,%s) %s", cat, start, end, formula);
+    LogController.logs("Deriv: %s(%s,%s) %s", cat, start, end, formula);
     for (int i = 0; i < children.size(); i++) {
-      LogInfo.begin_track("child %s:", i);
+      LogController.begin_track("child %s:", i);
       children.get(i).printDerivationRecursively();
-      LogInfo.end_track();
+      LogController.end_track();
     }
   }
 

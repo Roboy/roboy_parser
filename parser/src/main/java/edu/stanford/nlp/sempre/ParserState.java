@@ -1,7 +1,9 @@
 package edu.stanford.nlp.sempre;
 
 import java.util.*;
-import fig.basic.*;
+
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * Actually does the parsing.  Main method is infer(), whose job is to fill in
@@ -79,7 +81,7 @@ public abstract class ParserState {
 
   protected void featurizeAndScoreDerivation(Derivation deriv) {
     if (deriv.isFeaturizedAndScored()) {
-      LogInfo.warnings("Derivation already featurized: %s", deriv);
+      LogController.warnings("Derivation already featurized: %s", deriv);
       return;
     }
 
@@ -93,7 +95,7 @@ public abstract class ParserState {
       deriv.clearFeatures();
 
     if (parser.verbose(5)) {
-      LogInfo.logs("featurizeAndScoreDerivation(score=%s) %s %s: %s [rule: %s]",
+      LogController.logs("featurizeAndScoreDerivation(score=%s) %s %s: %s [rule: %s]",
           Fmt.D(deriv.score), deriv.cat, ex.spanString(deriv.start, deriv.end), deriv, deriv.rule);
     }
     numOfFeaturizedDerivs++;
@@ -112,7 +114,7 @@ public abstract class ParserState {
       maxCellSize = derivations.size();
       maxCellDescription = cellDescription;
       if (maxCellSize > 5000)
-        LogInfo.logs("ParserState.pruneCell %s: maxCellSize = %s entries (not pruned yet)",
+        LogController.logs("ParserState.pruneCell %s: maxCellSize = %s entries (not pruned yet)",
             maxCellDescription, maxCellSize);
     }
 
@@ -148,12 +150,12 @@ public abstract class ParserState {
 
     // Print out information
     if (Parser.opts.verbose >= 3) {
-      LogInfo.begin_track("ParserState.pruneCell(%s): %d derivations", cellDescription, derivations.size());
+      LogController.begin_track("ParserState.pruneCell(%s): %d derivations", cellDescription, derivations.size());
       for (Derivation deriv : derivations) {
-        LogInfo.logs("%s(%s,%s): %s %s, [score=%s] allAnchored: %s", deriv.cat, deriv.start, deriv.end, deriv.formula,
+        LogController.logs("%s(%s,%s): %s %s, [score=%s] allAnchored: %s", deriv.cat, deriv.start, deriv.end, deriv.formula,
             deriv.canonicalUtterance, deriv.score, deriv.allAnchored());
       }
-      LogInfo.end_track();
+      LogController.end_track();
     }
 
     // Max beam position (after sorting)
@@ -181,7 +183,7 @@ public abstract class ParserState {
       // Keep only the top hypotheses
       int beamSize = getBeamSize();
       if (derivations.size() > beamSize && Parser.opts.verbose >= 1) {
-        LogInfo.logs("ParserState.pruneCell %s: Pruning %d -> %d derivations", cellDescription, derivations.size(), beamSize);
+        LogController.logs("ParserState.pruneCell %s: Pruning %d -> %d derivations", cellDescription, derivations.size(), beamSize);
       }
       while (derivations.size() > beamSize) {
         derivations.remove(derivations.size() - 1);
@@ -244,7 +246,7 @@ public abstract class ParserState {
 
   // Ensure that all the logical forms are executed and compatibilities are computed.
   public void ensureExecuted() {
-    LogInfo.begin_track("Parser.ensureExecuted");
+    LogController.begin_track("Parser.ensureExecuted");
     // Execute predicted derivations to get value.
     List<Derivation> remove = new ArrayList();
     List<String> formulas = new ArrayList();
@@ -267,7 +269,7 @@ public abstract class ParserState {
         remove.add(deriv);
     }
     predDerivations.removeAll(remove);
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   // Add statistics to |evaluation|.

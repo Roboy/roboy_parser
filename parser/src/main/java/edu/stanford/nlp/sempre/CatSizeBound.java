@@ -2,7 +2,8 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
-import fig.basic.*;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * Given the maximum formula size in a floating grammar, compute the maximum size
@@ -37,7 +38,7 @@ public class CatSizeBound {
   public CatSizeBound(int maxFormulaSize, List<Rule> rules) {
     this.maxFormulaSize = maxFormulaSize;
     if (!FloatingParser.opts.useSizeInsteadOfDepth) {
-      LogInfo.warnings("Currently CatSizeBound is usable only when useSizeInsteadOfDepth = true.");
+      LogController.warnings("Currently CatSizeBound is usable only when useSizeInsteadOfDepth = true.");
       return;
     }
     // Construct graph
@@ -64,10 +65,10 @@ public class CatSizeBound {
       }
     }
     if (opts.verbose >= 1) {
-      LogInfo.begin_track("CatSizeBound: distances");
+      LogController.begin_track("CatSizeBound: distances");
       for (Map.Entry<String, Integer> entry : bound.entrySet())
-        LogInfo.logs("%25s : %2d", entry.getKey(), entry.getValue());
-      LogInfo.end_track();
+        LogController.logs("%25s : %2d", entry.getKey(), entry.getValue());
+      LogController.end_track();
     }
   }
 

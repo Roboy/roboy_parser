@@ -14,6 +14,7 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
@@ -22,7 +23,7 @@ import edu.stanford.nlp.trees.Tree;
 import com.google.common.collect.Lists;
 import com.google.common.base.Joiner;
 
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.*;
 import java.util.*;
@@ -173,7 +174,7 @@ public class FullNLPAnalyzer extends InfoAnalyzer {
         List<String> results = new ArrayList<>();
         for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
             results.add(sentence.toString());
-            LogInfo.logs(sentence.toString());
+            LogController.logs(sentence.toString());
         }
         return results;
     }
@@ -186,21 +187,21 @@ public class FullNLPAnalyzer extends InfoAnalyzer {
             Collection<RelationTriple> triples =
                     sentence.get(NaturalLogicAnnotations.RelationTriplesAnnotation.class);
             // Print the triples
-//            LogInfo.begin_track("OpenIE triples:");
+//            LogController.begin_track("OpenIE triples:");
             for (RelationTriple triple : triples) {
-//                LogInfo.logs("(%s, %s, %s) ",
+//                LogController.logs("(%s, %s, %s) ",
 //                        triple.subjectLemmaGloss(),
 //                        triple.relationLemmaGloss(),
 //                        triple.objectLemmaGloss());
 //                System.out.println("Triple confidence: " + triple.confidence);
-                //LogInfo.logs("Triple confidence: %d ",triple.confidence);
+                //LogController.logs("Triple confidence: %d ",triple.confidence);
                 StringBuilder sb = new StringBuilder();
                 sb.append("(").append(triple.subjectLemmaGloss()).append(",");
                 sb.append(triple.relationLemmaGloss()).append(",");
                 sb.append(triple.objectLemmaGloss()).append(")");
                 relationInfo.relations.put(sb.toString(), triple.confidence);
             }
-//            LogInfo.end_track();
+//            LogController.end_track();
         }
         return relationInfo;
     }
@@ -209,12 +210,12 @@ public class FullNLPAnalyzer extends InfoAnalyzer {
         GeneralInfo genInfo = new GeneralInfo();
         for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
             Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
-//            LogInfo.logs("Dependency tree: %s", tree);
+//            LogController.logs("Dependency tree: %s", tree);
             genInfo.keywords = getKeywords(tree);
-//            LogInfo.logs("Keywords extracted: %s", genInfo.keywords.toString());
+//            LogController.logs("Keywords extracted: %s", genInfo.keywords.toString());
             genInfo.sentiment_type = RNNCoreAnnotations.getPredictedClass(tree);
             genInfo.sentiment = sentence.get(SentimentCoreAnnotations.SentimentClass.class);
-//            LogInfo.logs("Sentiment extracted: %s", genInfo.sentiment);
+//            LogController.logs("Sentiment extracted: %s", genInfo.sentiment);
         }
         return genInfo;
     }
@@ -253,14 +254,14 @@ public class FullNLPAnalyzer extends InfoAnalyzer {
                 System.out.println("Enter some text:");
                 String text = reader.readLine();
                 LanguageInfo langInfo = analyzer.analyze(text);
-                LogInfo.begin_track("Analyzing \"%s\"", text);
-                LogInfo.logs("tokens: %s", langInfo.tokens);
-                LogInfo.logs("lemmaTokens: %s", langInfo.lemmaTokens);
-                LogInfo.logs("posTags: %s", langInfo.posTags);
-                LogInfo.logs("nerTags: %s", langInfo.nerTags);
-                LogInfo.logs("nerValues: %s", langInfo.nerValues);
-                LogInfo.logs("dependencyChildren: %s", langInfo.dependencyChildren);
-                LogInfo.end_track();
+                LogController.begin_track("Analyzing \"%s\"", text);
+                LogController.logs("tokens: %s", langInfo.tokens);
+                LogController.logs("lemmaTokens: %s", langInfo.lemmaTokens);
+                LogController.logs("posTags: %s", langInfo.posTags);
+                LogController.logs("nerTags: %s", langInfo.nerTags);
+                LogController.logs("nerValues: %s", langInfo.nerValues);
+                LogController.logs("dependencyChildren: %s", langInfo.dependencyChildren);
+                LogController.end_track();
             } catch (IOException e) {
                 e.printStackTrace();
             }

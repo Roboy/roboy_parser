@@ -2,7 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import edu.stanford.nlp.sempre.roboy.DatabaseInfo;
 import com.google.common.collect.Lists;
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.html.HtmlElement;
 import fig.html.HtmlUtils;
 import java.net.InetSocketAddress;
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import static fig.basic.LogInfo.logs;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 final class SecureIdentifiers {
   private SecureIdentifiers() { }
@@ -93,7 +93,7 @@ public class Server {
           try {
             String key = URLDecoder.decode(kv[0], "UTF-8");
             String value = URLDecoder.decode(kv[1], "UTF-8");
-            logs("%s => %s", key, value);
+            LogController.logs("%s => %s", key, value);
             reqParams.put(key, value);
           } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -118,7 +118,7 @@ public class Server {
       String sessionId = null;
       if (cookie != null) sessionId = cookie.getValue();
       if (opts.verbose >= 2)
-        LogInfo.logs("GET %s from %s (%ssessionId=%s)", uri, remoteHost, isNewSession ? "new " : "", sessionId);
+        LogController.logs("GET %s from %s (%ssessionId=%s)", uri, remoteHost, isNewSession ? "new " : "", sessionId);
 
       String uriPath = uri.getPath();
       if (uriPath.equals("/")) uriPath += "index.html";
@@ -523,7 +523,7 @@ public class Server {
 
       if (query == null) query = session.getLastQuery();
       if (query == null) query = "";
-      logs("Server.handleQuery %s: %s", session.id, query);
+      LogController.logs("Server.handleQuery %s: %s", session.id, query);
 
       // Print header
       if (jsonFormat())
@@ -637,14 +637,14 @@ public class Server {
 
     void getFile(String path) throws IOException {
       if (!new File(path).exists()) {
-        LogInfo.logs("File doesn't exist: %s", path);
+        LogController.logs("File doesn't exist: %s", path);
         exchange.sendResponseHeaders(404, 0);  // File not found
         return;
       }
 
       setHeaders(getMimeType(path));
       if (opts.verbose >= 2)
-        LogInfo.logs("Sending %s", path);
+        LogController.logs("Sending %s", path);
       OutputStream out = new BufferedOutputStream(exchange.getResponseBody());
       InputStream in = new FileInputStream(path);
       IOUtils.copy(in, out);
@@ -663,12 +663,12 @@ public class Server {
       server.createContext("/", new Handler());
       server.setExecutor(pool);
       server.start();
-      LogInfo.logs("Server started at http://%s:%s/sempre", hostname, opts.port);
-      LogInfo.log("Press Ctrl-D to terminate.");
-      while (LogInfo.stdin.readLine() != null) { }
-      LogInfo.log("Shutting down server...");
+      LogController.logs("Server started at http://%s:%s/sempre", hostname, opts.port);
+      LogController.log("Press Ctrl-D to terminate.");
+      while (LogController.stdin.readLine() != null) { }
+      LogController.log("Shutting down server...");
       server.stop(0);
-      LogInfo.log("Shutting down executor pool...");
+      LogController.log("Shutting down executor pool...");
       pool.shutdown();
     } catch (IOException e) {
       throw new RuntimeException(e);

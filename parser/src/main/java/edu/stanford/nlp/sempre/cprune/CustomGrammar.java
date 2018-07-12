@@ -3,7 +3,8 @@ package edu.stanford.nlp.sempre.cprune;
 import java.util.*;
 
 import edu.stanford.nlp.sempre.*;
-import fig.basic.*;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 public class CustomGrammar extends Grammar {
   public static class Options {
@@ -60,10 +61,10 @@ public class CustomGrammar extends Grammar {
     computeCustomRules(deriv, crossReferences);
     customRules.put(indexedSymbolicFormula, new HashSet<String>(derivInfo.customRuleStrings));
 
-    LogInfo.begin_track("Add custom rules for formula: " + indexedSymbolicFormula);
+    LogController.begin_track("Add custom rules for formula: " + indexedSymbolicFormula);
     for (String customRuleString : derivInfo.customRuleStrings) {
       if (customBinarizedRules.containsKey(customRuleString)) {
-        LogInfo.log("Custom rule exists: " + customRuleString);
+        LogController.log("Custom rule exists: " + customRuleString);
         continue;
       }
 
@@ -73,13 +74,13 @@ public class CustomGrammar extends Grammar {
       customBinarizedRules.put(customRuleString, new HashSet<Rule>(rules));
 
       // Debug
-      LogInfo.begin_track("Add custom rule: " + customRuleString);
+      LogController.begin_track("Add custom rule: " + customRuleString);
       for (Rule rule : rules) {
-        LogInfo.log(rule.toString());
+        LogController.log(rule.toString());
       }
-      LogInfo.end_track();
+      LogController.end_track();
     }
-    LogInfo.end_track();
+    LogController.end_track();
 
     // Debug
     System.out.println("consistent_lf\t" + ex.id + "\t" + deriv.formula.toString());
@@ -126,7 +127,7 @@ public class CustomGrammar extends Grammar {
     formula = formula.replace("(ARGMIN", "(argmin (number 1) (number 1)");
     formula = formula.replace("(ARGMAX", "(argmax (number 1) (number 1)");
     if (CollaborativePruner.opts.verbose >= 2)
-      LogInfo.logs("REPLACE: [%s | %s] %s | %s", targetBefore, replacement, before, formula);
+      LogController.logs("REPLACE: [%s | %s] %s | %s", targetBefore, replacement, before, formula);
     return formula;
   }
 
@@ -249,7 +250,7 @@ public class CustomGrammar extends Grammar {
     if (!symbolicFormulas.containsKey(formula)) {
       symbolicFormulas.put(formula, symbolicFormulas.size() + 1);
       String hashString = "$Formula" + symbolicFormulas.get(formula);
-      LogInfo.log("Add symbolic formula: " + hashString + " = " + formula + "  (" + deriv.cat + ")");
+      LogController.log("Add symbolic formula: " + hashString + " = " + formula + "  (" + deriv.cat + ")");
     }
     return "$Formula" + symbolicFormulas.get(formula);
   }

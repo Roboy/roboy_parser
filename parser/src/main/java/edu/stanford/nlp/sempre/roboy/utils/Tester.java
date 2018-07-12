@@ -3,7 +3,7 @@ package edu.stanford.nlp.sempre.roboy.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -89,29 +89,29 @@ public class Tester {
                         System.out.println("CP: " + resMap.get("parse"));
                     } else if (resMap.get("parse").equals("(no answer)")) {
                         unparsed++;
-                        LogInfo.logs("TEST: %s", entry.get("utterance"));
+                        LogController.logs("TEST: %s", entry.get("utterance"));
 //                        writer.println("TEST: " + entry.get("utterance"));
-                        LogInfo.logs("UP: %s", resMap.get("parse"));
+                        LogController.logs("UP: %s", resMap.get("parse"));
 //                        writer.println("UP: %s" + resMap.get("answer"));
                     } else {
                         fail++;
-                        LogInfo.logs("TEST: %s", entry.get("utterance"));
+                        LogController.logs("TEST: %s", entry.get("utterance"));
                         writer.println("TEST: " + entry.get("utterance"));
-                        LogInfo.logs("IC: %s", resMap.get("parse"));
+                        LogController.logs("IC: %s", resMap.get("parse"));
                         writer.println("IC PARSE: %s" + resMap.get("parse"));
                         writer.println("IC: %s" + resMap.get("answer"));
                     }
                 }
             }
-            LogInfo.logs("Success rate: %f", success);
-            LogInfo.logs("Unparsed: %f", unparsed);
-            LogInfo.logs("Failure: %f", fail);
-            LogInfo.logs("Success rate: %f", success/testSet.size());
-            LogInfo.logs("Unparsed: %f", unparsed/testSet.size());
-            LogInfo.logs("Failure: %f", fail/testSet.size());
+            LogController.logs("Success rate: %f", success);
+            LogController.logs("Unparsed: %f", unparsed);
+            LogController.logs("Failure: %f", fail);
+            LogController.logs("Success rate: %f", success/testSet.size());
+            LogController.logs("Unparsed: %f", unparsed/testSet.size());
+            LogController.logs("Failure: %f", fail/testSet.size());
 
 
-            LogInfo.logs("Time: %f", (double) TimeUnit.SECONDS.convert(System.nanoTime() - time, TimeUnit.NANOSECONDS));
+            LogController.logs("Time: %f", (double) TimeUnit.SECONDS.convert(System.nanoTime() - time, TimeUnit.NANOSECONDS));
         }
         catch(FileNotFoundException e){
             e.printStackTrace();
@@ -145,23 +145,23 @@ public class Tester {
 //                        System.out.println("CP: " + resMap.get("parse"));
 //                    } else if (resMap.get("parse").equals("(no answer)")) {
 //                        unparsed++;
-//                        LogInfo.logs("TEST: %s", entry.get("utterance"));
+//                        LogController.logs("TEST: %s", entry.get("utterance"));
 ////                        writer.println("TEST: " + entry.get("utterance"));
-//                        LogInfo.logs("UP: %s", resMap.get("parse"));
+//                        LogController.logs("UP: %s", resMap.get("parse"));
 ////                        writer.println("UP: %s" + resMap.get("answer"));
 //                    } else {
 //                        fail++;
-//                        LogInfo.logs("TEST: %s", entry.get("utterance"));
+//                        LogController.logs("TEST: %s", entry.get("utterance"));
 //                        writer.println("TEST: " + entry.get("utterance"));
-//                        LogInfo.logs("IC: %s", resMap.get("parse"));
+//                        LogController.logs("IC: %s", resMap.get("parse"));
 //                        writer.println("IC PARSE: %s" + resMap.get("parse"));
 //                        writer.println("IC: %s" + resMap.get("answer"));
 //                    }
 //                }
 //            }
-//            LogInfo.logs("Success rate: %f", success/testSet.size());
-//            LogInfo.logs("Unparsed: %f", unparsed/testSet.size());
-//            LogInfo.logs("Failure: %f", fail/testSet.size());
+//            LogController.logs("Success rate: %f", success/testSet.size());
+//            LogController.logs("Unparsed: %f", unparsed/testSet.size());
+//            LogController.logs("Failure: %f", fail/testSet.size());
 //        }
 //        catch(FileNotFoundException e){
 //            e.printStackTrace();
@@ -203,9 +203,9 @@ public class Tester {
 //                    }
 //                }
 //            }
-//            LogInfo.logs("Success rate: %f", success/testSet.size());
-//            LogInfo.logs("Unparsed: %f", unparsed/testSet.size());
-//            LogInfo.logs("Failure: %f", fail/testSet.size());
+//            LogController.logs("Success rate: %f", success/testSet.size());
+//            LogController.logs("Unparsed: %f", unparsed/testSet.size());
+//            LogController.logs("Failure: %f", fail/testSet.size());
 //
 //        }
 //        catch(FileNotFoundException e){

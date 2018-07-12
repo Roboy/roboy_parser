@@ -25,17 +25,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.testng.collections.Lists;
 
 import edu.stanford.nlp.sempre.Json;
-import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.basic.OptionsParser;
 import fig.exec.Execution;
 
 /**
  * utilites for simulating a session through the server
- * 
+ *
  * @author sidaw
  */
 
@@ -109,7 +109,7 @@ public class Simulator implements Runnable {
           stream = Files.lines(Paths.get(fileName));
 
         List<String> lines = stream.collect(Collectors.toList());
-        LogInfo.logs("Reading %s (%d lines)", fileName, lines.size());
+        LogController.logs("Reading %s (%d lines)", fileName, lines.size());
         int numLinesRead = 0;
         // ExecutorService executor = new ThreadPoolExecutor(numThreads,
         // numThreads,
@@ -121,7 +121,7 @@ public class Simulator implements Runnable {
           numLinesRead++;
           if (numLinesRead > maxQueries)
             break;
-          LogInfo.logs("Line %d", numLinesRead);
+          LogController.logs("Line %d", numLinesRead);
           if (!useThreads) {
             executeLine(l);
           } else {
@@ -133,7 +133,7 @@ public class Simulator implements Runnable {
             } finally {
               future.cancel(true); // may or may not desire this
               long endTime = System.nanoTime();
-              LogInfo.logs("Took %d ns or %.4f s", (endTime - startTime), (endTime - startTime) / 1.0e9);
+              LogController.logs("Took %d ns or %.4f s", (endTime - startTime), (endTime - startTime) / 1.0e9);
             }
           }
         }
@@ -150,7 +150,7 @@ public class Simulator implements Runnable {
     try {
       json = Json.readMapHard(l);
     } catch (RuntimeException e) {
-      LogInfo.logs("Json cannot be read from %s: %s", l, e.toString());
+      LogController.logs("Json cannot be read from %s: %s", l, e.toString());
       return;
     }
     Object command = json.get("q");
@@ -173,10 +173,10 @@ public class Simulator implements Runnable {
     params += String.format("&sessionId=%s&%s", sessionId, reqParams);
     // params = URLEncoder.encode(params);
     String url = String.format("%s/sempre?", serverURL);
-    // LogInfo.log(params);
-    // LogInfo.log(query);
+    // LogController.log(params);
+    // LogController.log(query);
     String response = executePost(url + params, "");
-    // LogInfo.log(response);
+    // LogController.log(response);
     return response;
   }
 
@@ -205,7 +205,7 @@ public class Simulator implements Runnable {
       InputStream is = connection.getInputStream();
       BufferedReader rd = new BufferedReader(new InputStreamReader(is));
       StringBuilder response = new StringBuilder(); // or StringBuffer if Java
-                                                    // version 5+
+      // version 5+
       String line;
       while ((line = rd.readLine()) != null) {
         response.append(line);
@@ -232,7 +232,7 @@ public class Simulator implements Runnable {
 
   @Override
   public void run() {
-    LogInfo.logs("setting numThreads %d", numThreads);
+    LogController.logs("setting numThreads %d", numThreads);
     readQueries();
   }
 }

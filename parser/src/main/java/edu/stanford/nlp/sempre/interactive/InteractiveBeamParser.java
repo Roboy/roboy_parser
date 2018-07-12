@@ -28,10 +28,10 @@ import edu.stanford.nlp.sempre.ParserState;
 import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.SemanticFn;
 import edu.stanford.nlp.sempre.Trie;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Evaluation;
 import fig.basic.IOUtils;
 import fig.basic.IntRef;
-import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.basic.SetUtils;
 import fig.basic.StopWatch;
@@ -40,7 +40,7 @@ import fig.exec.Execution;
 
 /**
  * A modified version of the BeamParser, with consideration for use in the interactive setting
- * 
+ *
  * @author Percy Liang, sidaw
  */
 public class InteractiveBeamParser extends Parser {
@@ -67,7 +67,7 @@ public class InteractiveBeamParser extends Parser {
     super(spec);
     if (opts.trackedCats != null) {
       opts.trackedCats = opts.trackedCats.stream().map(s -> "$" + s).collect(Collectors.toList());
-      LogInfo.logs("Mapped trackedCats to: %s", opts.trackedCats);
+      LogController.logs("Mapped trackedCats to: %s", opts.trackedCats);
     }
     interactiveCatUnaryRules = new LinkedList<>(super.catUnaryRules);
     allRules = new LinkedHashSet<>(super.catUnaryRules);
@@ -84,7 +84,7 @@ public class InteractiveBeamParser extends Parser {
   public synchronized void addRule(Rule rule) {
     if (allRules.contains(rule))
       return;
-    
+
     allRules.add(rule);
 
     if (!rule.isCatUnary()) {
@@ -93,12 +93,12 @@ public class InteractiveBeamParser extends Parser {
       interactiveCatUnaryRules.add(rule);
     }
   }
-  
+
   @Override
   public List<Rule> getCatUnaryRules() {
     return interactiveCatUnaryRules;
   }
-  
+
   // for grammar induction, just need the formula, do not execute
   public InteractiveBeamParserState parseWithoutExecuting(Params params, Example ex, boolean computeExpectedCounts) {
     // Parse
@@ -120,15 +120,15 @@ public class InteractiveBeamParser extends Parser {
   public ParserState newParserState(Params params, Example ex, boolean computeExpectedCounts) {
     InteractiveBeamParserState coarseState = null;
     if (Parser.opts.coarsePrune) {
-      LogInfo.begin_track("Parser.coarsePrune");
+      LogController.begin_track("Parser.coarsePrune");
       coarseState = new InteractiveBeamParserState(this, params, ex, computeExpectedCounts,
-          InteractiveBeamParserState.Mode.bool, null);
+              InteractiveBeamParserState.Mode.bool, null);
       coarseState.infer();
       coarseState.keepTopDownReachable();
-      LogInfo.end_track();
+      LogController.end_track();
     }
     return new InteractiveBeamParserState(this, params, ex, computeExpectedCounts, InteractiveBeamParserState.Mode.full,
-        coarseState);
+            coarseState);
   }
 
 }
@@ -169,7 +169,7 @@ class InteractiveBeamParserState extends ChartParserState {
   }
 
   public InteractiveBeamParserState(InteractiveBeamParser parser, Params params, Example ex, boolean computeExpectedCounts,
-      Mode mode, InteractiveBeamParserState coarseState) {
+                                    Mode mode, InteractiveBeamParserState coarseState) {
     super(parser, params, ex, computeExpectedCounts);
     this.parser = parser;
     this.mode = mode;
@@ -183,7 +183,7 @@ class InteractiveBeamParserState extends ChartParserState {
       return;
 
     if (parser.verbose(2))
-      LogInfo.begin_track("ParserState.infer");
+      LogController.begin_track("ParserState.infer");
 
     // Base case
     for (Derivation deriv : gatherTokenAndPhraseDerivations()) {
@@ -197,12 +197,12 @@ class InteractiveBeamParserState extends ChartParserState {
         build(i, i + len);
 
     if (parser.verbose(2))
-      LogInfo.end_track();
+      LogController.end_track();
 
     // Visualize
     if (parser.chartFillOut != null && Parser.opts.visualizeChartFilling && this.mode != Mode.bool) {
       parser.chartFillOut.println(
-          Json.writeValueAsStringHard(new ChartFillingData(ex.id, chartFillingList, ex.utterance, ex.numTokens())));
+              Json.writeValueAsStringHard(new ChartFillingData(ex.id, chartFillingList, ex.utterance, ex.numTokens())));
       parser.chartFillOut.flush();
     }
 
@@ -224,55 +224,55 @@ class InteractiveBeamParserState extends ChartParserState {
   }
 
   public void execute() {
-     if (mode == Mode.full) {
-       // Compute gradient with respect to the predicted derivations
-       if (this.execute)
-         ensureExecuted();
-       if (computeExpectedCounts) {
-         expectedCounts = new HashMap<>();
-         ParserState.computeExpectedCounts(predDerivations, expectedCounts);
-       }
-     }
+    if (mode == Mode.full) {
+      // Compute gradient with respect to the predicted derivations
+      if (this.execute)
+        ensureExecuted();
+      if (computeExpectedCounts) {
+        expectedCounts = new HashMap<>();
+        ParserState.computeExpectedCounts(predDerivations, expectedCounts);
+      }
+    }
 
-     /* If Beam Parser failed to find derivations, try a floating parser */
-     if (this.parseFloat) {
-       /*
-        * For every base span of the chart, add the derivations from nothing
-        * rules
-        */
-       List<Rule> nothingRules = new ArrayList<Rule>();
-       for (Rule rule : parser.grammar.getRules())
-         if (rule.isFloating() && rule.rhs.size() == 1 && rule.isRhsTerminals())
-           nothingRules.add(rule);
-       for (int i = 0; i < numTokens; i++)
-         for (Rule rule : nothingRules)
-           applyRule(i, i + 1, rule, chart[i][i + 1].get("$TOKEN"));
+    /* If Beam Parser failed to find derivations, try a floating parser */
+    if (this.parseFloat) {
+      /*
+       * For every base span of the chart, add the derivations from nothing
+       * rules
+       */
+      List<Rule> nothingRules = new ArrayList<Rule>();
+      for (Rule rule : parser.grammar.getRules())
+        if (rule.isFloating() && rule.rhs.size() == 1 && rule.isRhsTerminals())
+          nothingRules.add(rule);
+      for (int i = 0; i < numTokens; i++)
+        for (Rule rule : nothingRules)
+          applyRule(i, i + 1, rule, chart[i][i + 1].get("$TOKEN"));
 
-       /* Traverse the chart bottom up */
-       for (int len = 1; len <= numTokens; len++) {
-         for (int i = 0; i + len <= numTokens; i++) {
-           buildFloating(i, i + len);
-         }
-       }
+      /* Traverse the chart bottom up */
+      for (int len = 1; len <= numTokens; len++) {
+        for (int i = 0; i + len <= numTokens; i++) {
+          buildFloating(i, i + len);
+        }
+      }
 
-       /* Add unique derivations to predDerivations */
-       List<Derivation> rootDerivs = chart[0][numTokens].get("$FROOT");
-       if (rootDerivs == null)
-         rootDerivs = new ArrayList<Derivation>(Derivation.emptyList);
+      /* Add unique derivations to predDerivations */
+      List<Derivation> rootDerivs = chart[0][numTokens].get("$FROOT");
+      if (rootDerivs == null)
+        rootDerivs = new ArrayList<Derivation>(Derivation.emptyList);
 
-       List<Derivation> actionDerivs = new ArrayList<Derivation>(Derivation.emptyList);
-       if (actionDerivs != null) {
-         Set<Formula> formulas = new HashSet<Formula>();
-         for (Derivation d : rootDerivs) {
-           Formula f = d.getFormula();
-           if (!formulas.contains(f)) {
-             formulas.add(f);
-             predDerivations.add(d);
-           }
-         }
-       }
-     }
-   }
+      List<Derivation> actionDerivs = new ArrayList<Derivation>(Derivation.emptyList);
+      if (actionDerivs != null) {
+        Set<Formula> formulas = new HashSet<Formula>();
+        for (Derivation d : rootDerivs) {
+          Formula f = d.getFormula();
+          if (!formulas.contains(f)) {
+            formulas.add(f);
+            predDerivations.add(d);
+          }
+        }
+      }
+    }
+  }
 
   private List<Derivation> collectChart() {
     List<Derivation> chartList = Lists.newArrayList();
@@ -306,12 +306,12 @@ class InteractiveBeamParserState extends ChartParserState {
   // Return number of new derivations added
   private int applyRule(int start, int end, Rule rule, List<Derivation> children) {
     if (Parser.opts.verbose >= 5)
-      LogInfo.logs("applyRule %s %s %s %s", start, end, rule, children);
+      LogController.logs("applyRule %s %s %s %s", start, end, rule, children);
     try {
       if (mode == Mode.full) {
         StopWatchSet.begin(rule.getSemRepn());
         DerivationStream results = rule.sem.call(ex,
-            new SemanticFn.CallInfo(rule.lhs, start, end, rule, ImmutableList.copyOf(children)));
+                new SemanticFn.CallInfo(rule.lhs, start, end, rule, ImmutableList.copyOf(children)));
         StopWatchSet.end();
         while (results.hasNext()) {
           Derivation newDeriv = results.next();
@@ -321,14 +321,14 @@ class InteractiveBeamParserState extends ChartParserState {
         return results.estimatedSize();
       } else if (mode == Mode.bool) {
         Derivation deriv = new Derivation.Builder().cat(rule.lhs).start(start).end(end).rule(rule)
-            .children(ImmutableList.copyOf(children)).formula(Formula.nullFormula).createDerivation();
+                .children(ImmutableList.copyOf(children)).formula(Formula.nullFormula).createDerivation();
         addToChart(deriv);
         return 1;
       } else {
         throw new RuntimeException("Invalid mode");
       }
     } catch (Exception e) {
-      LogInfo.errors("Composition failed: rule = %s, children = %s", rule, children);
+      LogController.errors("Composition failed: rule = %s, children = %s", rule, children);
       e.printStackTrace();
       throw new RuntimeException(e);
     }
@@ -358,7 +358,7 @@ class InteractiveBeamParserState extends ChartParserState {
       String rhsCat = rule.rhs.get(0);
       List<Derivation> derivations = chart[start][end].get(rhsCat);
       if (Parser.opts.verbose >= 5)
-        LogInfo.logs("applyCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
+        LogController.logs("applyCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
       if (derivations == null)
         continue;
 
@@ -379,15 +379,15 @@ class InteractiveBeamParserState extends ChartParserState {
   // children: the derivations that't we're building up.
   // numNew: Keep track of number of new derivations created
   private void applyNonCatUnaryRules(int start, int end, int i, Trie node, ArrayList<Derivation> children,
-      IntRef numNew) {
+                                     IntRef numNew) {
     if (node == null)
       return;
     if (!coarseAllows(node, start, end))
       return;
 
     if (Parser.opts.verbose >= 5) {
-      LogInfo.logs("applyNonCatUnaryRules(start=%d, end=%d, i=%d, children=[%s], %s rules)", start, end, i,
-          Joiner.on(", ").join(children), node.rules.size());
+      LogController.logs("applyNonCatUnaryRules(start=%d, end=%d, i=%d, children=[%s], %s rules)", start, end, i,
+              Joiner.on(", ").join(children), node.rules.size());
     }
 
     // Base case: our fencepost has walked to the end of the span, so
@@ -462,7 +462,7 @@ class InteractiveBeamParserState extends ChartParserState {
   }
 
   protected int applyFloatingRule(Rule rule, int start, int end, Map<String, List<Derivation>> first,
-      Map<String, List<Derivation>> second) {
+                                  Map<String, List<Derivation>> second) {
     List<Derivation> derivs1 = first.get(rule.rhs.get(0));
     List<Derivation> derivs2 = second.get(rule.rhs.get(1));
 
@@ -537,7 +537,7 @@ class InteractiveBeamParserState extends ChartParserState {
         Collections.sort(toRemoveCats);
         for (String cat : toRemoveCats) {
           if (parser.verbose(4)) {
-            LogInfo.logs("Pruning chart %s(%s,%s)", cat, start, end);
+            LogController.logs("Pruning chart %s(%s,%s)", cat, start, end);
           }
           chart[start][end].remove(cat);
         }

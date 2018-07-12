@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.testng.annotations.Test;
 import org.testng.asserts.Assertion;
 import org.testng.asserts.SoftAssert;
@@ -33,11 +34,10 @@ import edu.stanford.nlp.sempre.interactive.DefinitionAligner;
 import edu.stanford.nlp.sempre.interactive.GrammarInducer;
 import edu.stanford.nlp.sempre.interactive.InteractiveMaster;
 import edu.stanford.nlp.sempre.interactive.InteractiveUtils;
-import fig.basic.LogInfo;
 
 /**
  * Test the grammar induction
- * 
+ *
  * @author sidaw
  */
 public class GrammarInducerTest {
@@ -58,7 +58,7 @@ public class GrammarInducerTest {
     Grammar.opts.inPaths = Lists.newArrayList("./interactive/voxelurn.grammar");
     Grammar.opts.useApplyFn = "interactive.ApplyFn";
     Grammar.opts.binarizeRules = false;
-    
+
     SimpleLexicon.opts.inPaths = Lists.newArrayList("./interactive/csscolors.lexicon");
 
     FeatureExtractor.opts.featureComputers = Sets.newHashSet("interactive.DALFeatureComputer");
@@ -102,9 +102,9 @@ public class GrammarInducerTest {
 
     public void def(String head, String def) {
       List<Rule> induced = InteractiveMaster.induceRulesHelper(":def", head, def, parser, params,
-          new Session("testsession"), null);
+              new Session("testsession"), null);
       allRules.addAll(induced);
-      LogInfo.logs("Defining %s := %s, added %s", head, def, induced);
+      LogController.logs("Defining %s := %s, added %s", head, def, induced);
       induced.forEach(r -> InteractiveUtils.addRuleInteractive(r, parser));
     }
 
@@ -114,7 +114,7 @@ public class GrammarInducerTest {
       Example exHead = b.createExample();
       exHead.preprocess();
 
-      // LogInfo.logs("Parsing definition: %s", ex.utterance);
+      // LogController.logs("Parsing definition: %s", ex.utterance);
       parser.parse(params, exHead, true);
 
       Derivation defDeriv = InteractiveUtils.combine(InteractiveUtils.derivsfromJson(def, parser, params, null));
@@ -122,25 +122,25 @@ public class GrammarInducerTest {
       boolean found = false;
       int ind = 0;
       for (Derivation d : exHead.predDerivations) {
-        // LogInfo.logs("considering: %s", d.formula.toString());
-        LogInfo.logs("Comparing %s vs %s", InteractiveUtils.stripBlock(d).formula.toString(),
-            InteractiveUtils.stripBlock(defDeriv).formula.toString());
+        // LogController.logs("considering: %s", d.formula.toString());
+        LogController.logs("Comparing %s vs %s", InteractiveUtils.stripBlock(d).formula.toString(),
+                InteractiveUtils.stripBlock(defDeriv).formula.toString());
         if (InteractiveUtils.stripBlock(d).formula.toString()
-            .equals(InteractiveUtils.stripBlock(defDeriv).formula.toString())) {
+                .equals(InteractiveUtils.stripBlock(defDeriv).formula.toString())) {
           found = true;
-          LogInfo.logs("found %s at %d", d.formula, ind);
+          LogController.logs("found %s at %d", d.formula, ind);
         }
         ind++;
       }
       printAllRules();
       if (!found) {
-        LogInfo.logs("Did not find %s among \n %s", defDeriv.formula, exHead.predDerivations);
+        LogController.logs("Did not find %s among \n %s", defDeriv.formula, exHead.predDerivations);
       }
       return found;
     }
 
     public void accept(String head, String def) {
-      LogInfo.begin_track("Accepting");
+      LogController.begin_track("Accepting");
       Example.Builder b = new Example.Builder();
       b.setUtterance(head);
       Example exHead = b.createExample();
@@ -148,34 +148,34 @@ public class GrammarInducerTest {
 
       Derivation defDeriv = InteractiveUtils.combine(InteractiveUtils.derivsfromJson(def, parser, params, null));
 
-      // LogInfo.logs("Parsing definition: %s", ex.utterance);
+      // LogController.logs("Parsing definition: %s", ex.utterance);
       parser.parse(params, exHead, true);
 
       for (Derivation deriv : exHead.predDerivations) {
         deriv.compatibility = defDeriv.formula.equals(deriv.formula) ? 1 : 0;
       }
-      exHead.predDerivations.forEach(d -> LogInfo.logs("Compatibility %s : %f", d.formula, d.compatibility));
+      exHead.predDerivations.forEach(d -> LogController.logs("Compatibility %s : %f", d.formula, d.compatibility));
 
       HashMap<String, Double> counts = new HashMap<>();
       ParserState.computeExpectedCounts(exHead.predDerivations, counts);
-      LogInfo.logs("Gradients: %s", counts);
-      // LogInfo.logs("paramsbefore: %s", params.getWeights());
+      LogController.logs("Gradients: %s", counts);
+      // LogController.logs("paramsbefore: %s", params.getWeights());
       params.update(counts);
-      // LogInfo.logs("paramsafter: %s", params.getWeights());
-      LogInfo.end_track();
+      // LogController.logs("paramsafter: %s", params.getWeights());
+      LogController.end_track();
     }
 
     public void printAllRules() {
-      LogInfo.begin_track("Rules induced");
-      allRules.forEach(r -> LogInfo.log(r));
-      LogInfo.end_track();
+      LogController.begin_track("Rules induced");
+      allRules.forEach(r -> LogController.log(r));
+      LogController.end_track();
     }
   }
 
   // tests simple substitutions
   @Test(groups = { "Interactive" })
   public void simpleTest() {
-    LogInfo.begin_track("simpleTest");
+    LogController.begin_track("simpleTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -212,12 +212,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void actionTest() {
-    LogInfo.begin_track("actionTest");
+    LogController.begin_track("actionTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -236,12 +236,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void notActionTest() {
-    LogInfo.begin_track("notActionTest");
+    LogController.begin_track("notActionTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -255,12 +255,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void learnCatTest() {
-    LogInfo.begin_track("test the learning via alignment");
+    LogController.begin_track("test the learning via alignment");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -289,12 +289,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void cubeTest() {
-    LogInfo.begin_track("cubeTest");
+    LogController.begin_track("cubeTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -309,12 +309,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void rectTest() {
-    LogInfo.begin_track("rectTest");
+    LogController.begin_track("rectTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -328,12 +328,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void setsTest() {
-    LogInfo.begin_track("setsTest");
+    LogController.begin_track("setsTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -346,7 +346,7 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
 }

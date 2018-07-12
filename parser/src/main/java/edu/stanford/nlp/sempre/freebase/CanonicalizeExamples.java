@@ -2,7 +2,8 @@ package edu.stanford.nlp.sempre.freebase;
 
 import com.google.common.base.Function;
 import edu.stanford.nlp.sempre.*;
-import fig.basic.*;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 
 import java.io.PrintWriter;
@@ -54,7 +55,7 @@ public class CanonicalizeExamples implements Runnable {
 
     for (String inPath : examplePaths) {
       String outPath = inPath + ".canonicalized";
-      LogInfo.logs("Converting %s => %s", inPath, outPath);
+      LogController.logs("Converting %s => %s", inPath, outPath);
       Iterator<LispTree> it = LispTree.proto.parseFromFile(inPath);
       PrintWriter out = IOUtils.openOutHard(outPath);
       while (it.hasNext()) {

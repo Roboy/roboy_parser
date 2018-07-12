@@ -16,7 +16,7 @@ import edu.stanford.nlp.util.CoreMap;
 import com.google.common.collect.Lists;
 import com.google.common.base.Joiner;
 
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.*;
 import java.util.*;
@@ -151,14 +151,14 @@ public class CoreNLPAnalyzer extends LanguageAnalyzer {
         System.out.println("Enter some text:");
         String text = reader.readLine();
         LanguageInfo langInfo = analyzer.analyze(text);
-        LogInfo.begin_track("Analyzing \"%s\"", text);
-        LogInfo.logs("tokens: %s", langInfo.tokens);
-        LogInfo.logs("lemmaTokens: %s", langInfo.lemmaTokens);
-        LogInfo.logs("posTags: %s", langInfo.posTags);
-        LogInfo.logs("nerTags: %s", langInfo.nerTags);
-        LogInfo.logs("nerValues: %s", langInfo.nerValues);
-        LogInfo.logs("dependencyChildren: %s", langInfo.dependencyChildren);
-        LogInfo.end_track();
+        LogController.begin_track("Analyzing \"%s\"", text);
+        LogController.logs("tokens: %s", langInfo.tokens);
+        LogController.logs("lemmaTokens: %s", langInfo.lemmaTokens);
+        LogController.logs("posTags: %s", langInfo.posTags);
+        LogController.logs("nerTags: %s", langInfo.nerTags);
+        LogController.logs("nerValues: %s", langInfo.nerValues);
+        LogController.logs("dependencyChildren: %s", langInfo.dependencyChildren);
+        LogController.end_track();
       } catch (IOException e) {
         e.printStackTrace();
       }

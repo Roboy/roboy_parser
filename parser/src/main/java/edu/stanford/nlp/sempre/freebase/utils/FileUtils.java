@@ -13,7 +13,7 @@ import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
 import edu.stanford.nlp.util.StringUtils;
 import fig.basic.LispTree;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public final class FileUtils {
       res.put(tokens[0], tokens[1]);
       i++;
       if (i % 1000000 == 0)
-        LogInfo.logs("Uploaing line %s: %s", i, line);
+        LogController.logs("Uploaing line %s: %s", i, line);
     }
     reader.close();
     return res;
@@ -85,7 +85,7 @@ public final class FileUtils {
       res.put(tokens[keyColumn], tokens[valueColumn]);
       i++;
       if (i % 1000000 == 0)
-        LogInfo.log("Number of lines uploaded: " + i);
+        LogController.log("Number of lines uploaded: " + i);
     }
     reader.close();
     return res;
@@ -119,7 +119,7 @@ public final class FileUtils {
       res.add(tokens[column]);
       i++;
       if (i % 1000000 == 0) {
-        LogInfo.log("Number of lines: " + i);
+        LogController.log("Number of lines: " + i);
       }
     }
 

@@ -8,7 +8,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import fig.basic.Evaluation;
 import fig.basic.LispTree;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -271,41 +271,41 @@ public class Example {
   }
 
   public void log() {
-    LogInfo.begin_track("Example: %s", utterance);
-    LogInfo.logs("Tokens: %s", getTokens());
-    LogInfo.logs("Lemmatized tokens: %s", getLemmaTokens());
-    LogInfo.logs("POS tags: %s", languageInfo.posTags);
-    LogInfo.logs("NER tags: %s", languageInfo.nerTags);
-    LogInfo.logs("NER values: %s", languageInfo.nerValues);
+    LogController.begin_track("Example: %s", utterance);
+    LogController.logs("Tokens: %s", getTokens());
+    LogController.logs("Lemmatized tokens: %s", getLemmaTokens());
+    LogController.logs("POS tags: %s", languageInfo.posTags);
+    LogController.logs("NER tags: %s", languageInfo.nerTags);
+    LogController.logs("NER values: %s", languageInfo.nerValues);
     if (context != null)
-      LogInfo.logs("context: %s", context);
+      LogController.logs("context: %s", context);
     if (targetFormula != null)
-      LogInfo.logs("targetFormula: %s", targetFormula);
+      LogController.logs("targetFormula: %s", targetFormula);
     if (targetValue != null)
-      LogInfo.logs("targetValue: %s", targetValue);
-    LogInfo.logs("Sentiment: %s", genInfo.sentiment);
-    LogInfo.logs("Keywords: %s", genInfo.keywords.toString());
-    LogInfo.logs("Dependency children: %s", languageInfo.dependencyChildren);
-    LogInfo.logs("Extracted relations: %s", relationInfo.relations.toString());
-    LogInfo.end_track();
+      LogController.logs("targetValue: %s", targetValue);
+    LogController.logs("Sentiment: %s", genInfo.sentiment);
+    LogController.logs("Keywords: %s", genInfo.keywords.toString());
+    LogController.logs("Dependency children: %s", languageInfo.dependencyChildren);
+    LogController.logs("Extracted relations: %s", relationInfo.relations.toString());
+    LogController.end_track();
   }
 
   public void logWithoutContext() {
-    LogInfo.begin_track("Example: %s", utterance);
-    LogInfo.logs("Tokens: %s", getTokens());
-    LogInfo.logs("Lemmatized tokens: %s", getLemmaTokens());
-    LogInfo.logs("POS tags: %s", languageInfo.posTags);
-    LogInfo.logs("NER tags: %s", languageInfo.nerTags);
-    LogInfo.logs("NER values: %s", languageInfo.nerValues);
+    LogController.begin_track("Example: %s", utterance);
+    LogController.logs("Tokens: %s", getTokens());
+    LogController.logs("Lemmatized tokens: %s", getLemmaTokens());
+    LogController.logs("POS tags: %s", languageInfo.posTags);
+    LogController.logs("NER tags: %s", languageInfo.nerTags);
+    LogController.logs("NER values: %s", languageInfo.nerValues);
     if (targetFormula != null)
-      LogInfo.logs("targetFormula: %s", targetFormula);
+      LogController.logs("targetFormula: %s", targetFormula);
     if (targetValue != null)
-      LogInfo.logs("targetValue: %s", targetValue);
-    LogInfo.logs("Sentiment: %s", genInfo.sentiment);
-    LogInfo.logs("Keywords: %s", genInfo.keywords.toString());
-    LogInfo.logs("Dependency children: %s", languageInfo.dependencyChildren);
-    LogInfo.logs("Extracted relations: %s", relationInfo.relations.toString());
-    LogInfo.end_track();
+      LogController.logs("targetValue: %s", targetValue);
+    LogController.logs("Sentiment: %s", genInfo.sentiment);
+    LogController.logs("Keywords: %s", genInfo.keywords.toString());
+    LogController.logs("Dependency children: %s", languageInfo.dependencyChildren);
+    LogController.logs("Extracted relations: %s", relationInfo.relations.toString());
+    LogController.end_track();
   }
 
   public List<Derivation> getCorrectDerivations() {

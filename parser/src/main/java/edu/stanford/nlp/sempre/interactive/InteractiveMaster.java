@@ -23,7 +23,7 @@ import edu.stanford.nlp.sempre.RuleSource;
 import edu.stanford.nlp.sempre.Session;
 import fig.basic.IOUtils;
 import fig.basic.LispTree;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.basic.Ref;
 
@@ -63,13 +63,13 @@ public class InteractiveMaster extends Master {
   @Override
   protected void printHelp() {
     // interactive commands
-    LogInfo.log("Interactive commands");
-    LogInfo.log(
+    LogController.log("Interactive commands");
+    LogController.log(
         "  (:def head [[body1,bodyformula1],[body2,bodyformula2]]): provide a definition for the original utterance");
-    LogInfo.log("  (:q |utterance|): provide a definition for the original utterance");
-    LogInfo.log("  (:accept |formula1| |formula2|): accept any derivation with those corresponding formula");
-    LogInfo.log("  (:reject |formula1| |formula2|): reject any derivations with those corresponding formula");
-    LogInfo.log("Main commands:");
+    LogController.log("  (:q |utterance|): provide a definition for the original utterance");
+    LogController.log("  (:accept |formula1| |formula2|): accept any derivation with those corresponding formula");
+    LogController.log("  (:reject |formula1| |formula2|): reject any derivations with those corresponding formula");
+    LogController.log("Main commands:");
     super.printHelp();
   }
 
@@ -81,9 +81,9 @@ public class InteractiveMaster extends Master {
 
   @Override
   public Response processQuery(Session session, String line) {
-    LogInfo.begin_track("InteractiveMaster.handleQuery");
-    LogInfo.logs("session %s", session.id);
-    LogInfo.logs("query %s", line);
+    LogController.begin_track("InteractiveMaster.handleQuery");
+    LogController.logs("session %s", session.id);
+    LogController.logs("query %s", line);
     line = line.trim();
     Response response = new Response();
     if (line.startsWith("(:"))
@@ -92,7 +92,7 @@ public class InteractiveMaster extends Master {
       super.processQuery(session, line);
     else
       handleCommand(session, String.format("(:q \"%s\")", line), response);
-    LogInfo.end_track();
+    LogController.end_track();
     return response;
   }
 
@@ -119,7 +119,7 @@ public class InteractiveMaster extends Master {
       stats.size(ex.predDerivations != null ? ex.predDerivations.size() : 0);
       stats.status(InteractiveUtils.getParseStatus(ex));
 
-      LogInfo.logs("parse stats: %s", response.stats);
+      LogController.logs("parse stats: %s", response.stats);
       response.ex = ex;
     } else if (command.equals(":qdbg")) {
       // Create example
@@ -183,9 +183,9 @@ public class InteractiveMaster extends Master {
         // ex.setTargetValue(match.value); // this is just for logging, not
         // actually used for learning
         if (session.isLearning()) {
-          LogInfo.begin_track("Updating parameters");
+          LogController.begin_track("Updating parameters");
           learner.onlineLearnExampleByFormula(ex, targetFormulas);
-          LogInfo.end_track();
+          LogController.end_track();
         }
       }
     } else if (command.startsWith(":def")) {
@@ -228,13 +228,13 @@ public class InteractiveMaster extends Master {
             out.close();
           }
         } else {
-          LogInfo.logs("No rule induced for head %s", head);
+          LogController.logs("No rule induced for head %s", head);
         }
       } else {
-        LogInfo.logs("Invalid format for def");
+        LogController.logs("Invalid format for def");
       }
     } else if (command.equals(":printInfo")) {
-      LogInfo.logs("Printing and overriding grammar and parameters...");
+      LogController.logs("Printing and overriding grammar and parameters...");
       builder.params.write(Paths.get(InteractiveMaster.opts.intOutputPath, "params.params").toString());
       PrintWriter out = IOUtils
           .openOutAppendHard(Paths.get(InteractiveMaster.opts.intOutputPath + "grammar.final.json").toString());
@@ -242,10 +242,10 @@ public class InteractiveMaster extends Master {
         out.println(rule.toJson());
       }
       out.close();
-      LogInfo.logs("Done printing and overriding grammar and parameters...");
+      LogController.logs("Done printing and overriding grammar and parameters...");
     } else if (command.equals(":context")) {
       if (tree.children.size() == 1) {
-        LogInfo.logs("%s", session.context);
+        LogController.logs("%s", session.context);
       } else {
         session.context = ContextValue
             .fromString(String.format("(context (graph NaiveKnowledgeGraph ((string \"%s\") (name b) (name c))))",
@@ -253,7 +253,7 @@ public class InteractiveMaster extends Master {
         response.stats.put("context_length", tree.children.get(1).toString().length());
       }
     } else {
-      LogInfo.log("Invalid command: " + tree);
+      LogController.log("Invalid command: " + tree);
     }
   }
 
@@ -270,7 +270,7 @@ public class InteractiveMaster extends Master {
   public static List<Rule> induceRulesHelper(String command, String head, String jsonDef, Parser parser, Params params,
       Session session, Ref<Response> refResponse) throws BadInteractionException {
     Example exHead = exampleFromUtterance(head, session);
-    LogInfo.logs("head: %s", exHead.getTokens());
+    LogController.logs("head: %s", exHead.getTokens());
 
     if (exHead.getTokens() == null || exHead.getTokens().size() == 0)
       throw BadInteractionException.headIsEmpty(head);
@@ -282,9 +282,9 @@ public class InteractiveMaster extends Master {
     if (GrammarInducer.getParseStatus(exHead) == GrammarInducer.ParseStatus.Core)
       throw BadInteractionException.headIsCore(head);
 
-    LogInfo.logs("num anchored: %d", state.chartList.size());
+    LogController.logs("num anchored: %d", state.chartList.size());
     List<String> bodyList = InteractiveUtils.utterancefromJson(jsonDef, false);
-    LogInfo.logs("bodyutterances:\n %s", String.join("\t", bodyList));
+    LogController.logs("bodyutterances:\n %s", String.join("\t", bodyList));
 
     Derivation bodyDeriv = InteractiveUtils
         .combine(InteractiveUtils.derivsfromJson(jsonDef, parser, params, refResponse));

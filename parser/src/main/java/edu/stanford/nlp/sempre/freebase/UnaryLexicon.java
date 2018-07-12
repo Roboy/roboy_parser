@@ -7,7 +7,7 @@ import edu.stanford.nlp.sempre.freebase.FbFormulasInfo.UnaryFormulaInfo;
 import edu.stanford.nlp.sempre.freebase.lexicons.EntrySource;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.LexiconValue;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.UnaryLexicalEntry;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.MapUtils;
 import fig.basic.Option;
 import fig.basic.StopWatchSet;
@@ -61,13 +61,13 @@ public final class UnaryLexicon {
   }
 
   private void read() {
-    LogInfo.begin_track("Loading unary lexicon file " + opts.unaryLexiconFilePath);
+    LogController.begin_track("Loading unary lexicon file " + opts.unaryLexiconFilePath);
     for (String line : IOUtils.readLines(opts.unaryLexiconFilePath)) {
       LexiconValue lv = Json.readValueHard(line, LexiconValue.class);
       addEntry(lv.lexeme, lv.source, lv.formula, lv.features);
     }
-    LogInfo.log("Number of lexemes: " + lexemeToEntryList.size());
-    LogInfo.end_track();
+    LogController.log("Number of lexemes: " + lexemeToEntryList.size());
+    LogController.end_track();
   }
 
   private void addEntry(String nl, String source, Formula formula, Map<String, Double> featureMap) {
@@ -79,7 +79,7 @@ public final class UnaryLexicon {
               uInfo.popularity, new TreeMap<>(featureMap), uInfo.types);
       MapUtils.addToList(lexemeToEntryList, nl, uEntry);
     } else {
-      if (opts.verbose >= 3) LogInfo.warnings("Missing info for unary: %s ", formula);
+      if (opts.verbose >= 3) LogController.warnings("Missing info for unary: %s ", formula);
     }
   }
 
@@ -117,16 +117,16 @@ public final class UnaryLexicon {
 
   public void sortLexiconByFeedback(Params params) {
     StopWatchSet.begin("UnaryLexicon.sortLexiconByFeedback");
-    LogInfo.log("Number of entries: " + lexemeToEntryList.size());
+    LogController.log("Number of entries: " + lexemeToEntryList.size());
     UnaryLexEntrybyFeaturesComparator comparator = new UnaryLexEntrybyFeaturesComparator(params);
     for (String lexeme : lexemeToEntryList.keySet()) {
       Collections.sort(lexemeToEntryList.get(lexeme), comparator);
       if (LexiconFn.opts.verbose > 0) {
-        LogInfo.logs("Sorted list for lexeme=%s", lexeme);
+        LogController.logs("Sorted list for lexeme=%s", lexeme);
         for (UnaryLexicalEntry uEntry : lexemeToEntryList.get(lexeme)) {
           FeatureVector fv = new FeatureVector();
           LexiconFn.getUnaryEntryFeatures(uEntry, fv);
-          LogInfo.logs("Entry=%s, dotprod=%s", uEntry, fv.dotProduct(comparator.params));
+          LogController.logs("Entry=%s, dotprod=%s", uEntry, fv.dotProduct(comparator.params));
         }
       }
     }

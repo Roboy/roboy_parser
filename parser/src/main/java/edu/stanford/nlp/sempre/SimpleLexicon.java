@@ -1,6 +1,6 @@
 package edu.stanford.nlp.sempre;
 
-import fig.basic.*;
+import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.reflect.TypeToken;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * A Lexicon maps phrases (e.g., born) to lexical entries, which contain a
@@ -74,7 +75,7 @@ public final class SimpleLexicon {
   Map<String, List<Entry>> entries = new HashMap<String, List<Entry>>();
 
   public void read(String path) {
-    LogInfo.begin_track("SimpleLexicon.read(%s)", path);
+    LogController.begin_track("SimpleLexicon.read(%s)", path);
     try {
       BufferedReader in = IOUtils.openIn(path);
       String line;
@@ -130,11 +131,11 @@ public final class SimpleLexicon {
           // In the future, add other mechanisms for lemmatization.
         }
       }
-      LogInfo.logs("Read %s lines, generated %d entries (now %d total)", numLines, entries.size() - oldNumEntries, entries.size());
+      LogController.logs("Read %s lines, generated %d entries (now %d total)", numLines, entries.size() - oldNumEntries, entries.size());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    LogInfo.end_track();
+    LogController.end_track();
   }
 
   public void add(String json) {

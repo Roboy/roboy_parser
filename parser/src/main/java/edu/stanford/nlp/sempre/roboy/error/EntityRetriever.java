@@ -11,7 +11,7 @@ import edu.stanford.nlp.sempre.roboy.utils.XMLReader;
 
 import com.google.gson.Gson;
 import fig.basic.IOUtils;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * Entity Helper use DBpedia Lookup APIs or similar API to resolve underspecified entities in the lexicon
@@ -68,7 +68,7 @@ public class EntityRetriever extends KnowledgeRetriever {
             result.candidates.add(c.get("URI"));
             result.candidatesInfo.add(this.gson.toJson(c));
             if (ConfigManager.DEBUG > 3) {
-                LogInfo.logs("Entity candidate: %s", c.toString());
+                LogController.logs("Entity candidate: %s", c.toString());
             }
             out.println(c.toString());
         }

@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre.test;
 
 import edu.stanford.nlp.sempre.*;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
@@ -42,9 +42,9 @@ public class ParserTest {
 
     // Debug information
     for (Derivation deriv : state.predDerivations) {
-      LogInfo.dbg(deriv.getAllFeatureVector());
-      LogInfo.dbg(params.getWeights());
-      LogInfo.dbgs("Score %f", deriv.computeScore(params));
+      LogController.dbg(deriv.getAllFeatureVector());
+      LogController.dbg(params.getWeights());
+      LogController.dbgs("Score %f", deriv.computeScore(params));
     }
    // parser.extractor.extractLocal();
     assertEquals(numExpected, ex.getPredDerivations().size());

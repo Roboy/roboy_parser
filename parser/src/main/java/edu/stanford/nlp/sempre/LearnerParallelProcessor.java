@@ -3,7 +3,7 @@ package edu.stanford.nlp.sempre;
 import java.util.*;
 
 import fig.basic.Evaluation;
-import fig.basic.LogInfo;
+import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Parallelizer;
 import fig.basic.StopWatchSet;
 import fig.exec.Execution;
@@ -33,7 +33,7 @@ public class LearnerParallelProcessor implements Parallelizer.Processor<Example>
 
   @Override
   public void process(Example ex, int i, int n) {
-    LogInfo.begin_track_printAll(
+    LogController.begin_track_printAll(
         "%s: example %s/%s: %s", prefix, i, n, ex.id);
     ex.log();
     Execution.putOutput("example", i);
@@ -48,27 +48,27 @@ public class LearnerParallelProcessor implements Parallelizer.Processor<Example>
 
       // Gathered enough examples, update parameters
       StopWatchSet.begin("Learner.updateWeights");
-      LogInfo.begin_track("Updating learner weights");
+      LogController.begin_track("Updating learner weights");
       if (Learner.opts.verbose >= 2)
         SempreUtils.logMap(counts, "gradient");
       double sum = 0;
       for (double v : counts.values()) sum += v * v;
-      LogInfo.logs("L2 norm: %s", Math.sqrt(sum));
+      LogController.logs("L2 norm: %s", Math.sqrt(sum));
       synchronized (params) {
         params.update(counts);
       }
       counts.clear();
-      LogInfo.end_track();
+      LogController.end_track();
       StopWatchSet.end();
     }
 
-    LogInfo.logs("Current: %s", ex.evaluation.summary());
+    LogController.logs("Current: %s", ex.evaluation.summary());
     synchronized (evaluation) {
       evaluation.add(ex.evaluation);
-      LogInfo.logs("Cumulative(%s): %s", prefix, evaluation.summary());
+      LogController.logs("Cumulative(%s): %s", prefix, evaluation.summary());
     }
 
-    LogInfo.end_track();
+    LogController.end_track();
 
     // To save memory
     ex.clean();
