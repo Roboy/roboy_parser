@@ -2,6 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.Evaluation;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Parallelizer;
@@ -38,16 +39,16 @@ public class LearnerParallelProcessor implements Parallelizer.Processor<Example>
     ex.log();
     Execution.putOutput("example", i);
 
-    StopWatchSet.begin("Parser.parse");
+    StopWatchSetController.begin("Parser.parse");
     ParserState state = parser.parse(params, ex, computeExpectedCounts);
-    StopWatchSet.end();
+    StopWatchSetController.end();
 
     if (computeExpectedCounts) {
       Map<String, Double> counts = new HashMap<>();
       SempreUtils.addToDoubleMap(counts, state.expectedCounts);
 
       // Gathered enough examples, update parameters
-      StopWatchSet.begin("Learner.updateWeights");
+      StopWatchSetController.begin("Learner.updateWeights");
       LogController.begin_track("Updating learner weights");
       if (Learner.opts.verbose >= 2)
         SempreUtils.logMap(counts, "gradient");
@@ -59,7 +60,7 @@ public class LearnerParallelProcessor implements Parallelizer.Processor<Example>
       }
       counts.clear();
       LogController.end_track();
-      StopWatchSet.end();
+      StopWatchSetController.end();
     }
 
     LogController.logs("Current: %s", ex.evaluation.summary());

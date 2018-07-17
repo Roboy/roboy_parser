@@ -5,6 +5,7 @@ import edu.stanford.nlp.sempre.cache.StringCache;
 import edu.stanford.nlp.sempre.cache.StringCacheUtils;
 
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -244,7 +245,7 @@ public class SparqlExecutor extends Executor {
       LogController.logs("SparqlExecutor.execute: %s", formula);
     String prefix = "exec-";
 
-    Evaluation stats = new Evaluation();
+    Evaluation stats = new EvaluationController();
     if (formula.toString().contains("Open"))
       return new Response(new StringValue(""),stats);
 

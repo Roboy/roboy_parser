@@ -2,6 +2,8 @@ package edu.stanford.nlp.sempre.roboy.utils;
 
 import fig.basic.LogInfo;
 
+import java.io.PrintWriter;
+
 public class LogController extends LogInfo {
 
     private static boolean INFO = true;
@@ -72,11 +74,13 @@ public class LogController extends LogInfo {
         if(INFO)LogInfo.logs(format,args);
     }
 
+    public static void setFileOut(PrintWriter newFileOut) {
+        if(INFO) LogInfo.setFileOut(newFileOut);
+    }
 
 
 
-
-    public static void dbgs(String format, Object... args) {
+        public static void dbgs(String format, Object... args) {
         if(INFO) LogInfo.dbgs(format, args);
     }
 

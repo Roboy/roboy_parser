@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import edu.stanford.nlp.sempre.Json;
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
 import fig.basic.Evaluation;
 import fig.basic.IOUtils;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
@@ -20,9 +21,9 @@ public class SimulationAnalyzer {
     return null;
   }
 
-  static Evaluation qEval = new Evaluation();
-  static Evaluation acceptEval = new Evaluation();
-  static Evaluation dEval = new Evaluation();
+  static Evaluation qEval = new EvaluationController();
+  static Evaluation acceptEval = new EvaluationController();
+  static Evaluation dEval = new EvaluationController();
   static int queryCount = 0;
 
   // add stats to the query.

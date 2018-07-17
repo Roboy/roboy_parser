@@ -1,6 +1,7 @@
 package edu.stanford.nlp.sempre;
 
 import edu.stanford.nlp.sempre.roboy.ErrorRetrieval;
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
@@ -200,7 +201,7 @@ public abstract class Parser {
 
     // Evaluate
     if (opts.callSetEvaluation) {
-      ex.evaluation = new Evaluation();
+      ex.evaluation = new EvaluationController();
       addToEvaluation(state, ex.evaluation);
     }
     // Clean up temporary state used during parsing
@@ -249,7 +250,7 @@ public abstract class Parser {
 
     // Evaluate
     if (opts.callSetEvaluation) {
-      ex.evaluation = new Evaluation();
+      ex.evaluation = new EvaluationController();
       addToEvaluation(state, ex.evaluation);
     }
     // Clean up temporary state used during parsing

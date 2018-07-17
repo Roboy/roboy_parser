@@ -3,6 +3,7 @@ package edu.stanford.nlp.sempre.freebase;
 import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.cache.StringCache;
 import edu.stanford.nlp.sempre.cache.StringCacheUtils;
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.w3c.dom.Document;
@@ -238,7 +239,7 @@ public class SparqlExecutor extends Executor {
       LogController.logs("SparqlExecutor.execute: %s", formula);
     String prefix = "exec-";
 
-    Evaluation stats = new Evaluation();
+    Evaluation stats = new EvaluationController();
     // Convert to SPARQL
     Converter converter;
     try {

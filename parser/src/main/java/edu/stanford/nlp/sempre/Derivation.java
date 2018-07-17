@@ -2,6 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
@@ -323,11 +324,11 @@ public class Derivation implements SemanticFn.Callable, HasScore {
   // execute it!
   public void ensureExecuted(Executor executor, ContextValue context) {
     if (isExecuted()) return;
-    StopWatchSet.begin("Executor.execute");
+    StopWatchSetController.begin("Executor.execute");
     if (opts.showExecutions)
       LogController.logs("%s - %s", canonicalUtterance, formula);
     Executor.Response response = executor.execute(formula, context);
-    StopWatchSet.end();
+    StopWatchSetController.end();
     value = response.value;
     executorStats = response.stats;
   }

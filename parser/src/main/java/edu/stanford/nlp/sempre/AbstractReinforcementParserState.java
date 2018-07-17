@@ -2,6 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import com.google.common.collect.Sets;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.MapUtils;
 import fig.basic.StopWatchSet;
 
@@ -133,12 +134,12 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
     try {
       if (Parser.opts.verbose >= 5)
         LogController.logs("applyRule %s %s %s %s", start, end, rule, children);
-      StopWatchSet.begin(rule.getSemRepn()); // measuring time
-      StopWatchSet.begin(rule.toString());
+      StopWatchSetController.begin(rule.getSemRepn()); // measuring time
+      StopWatchSetController.begin(rule.toString());
       DerivationStream results = rule.sem.call(ex,
               new SemanticFn.CallInfo(rule.lhs, start, end, rule, com.google.common.collect.ImmutableList.copyOf(children)));
-      StopWatchSet.end();
-      StopWatchSet.end();
+      StopWatchSetController.end();
+      StopWatchSetController.end();
       return results;
     } catch (Exception e) {
       LogController.errors("Composition failed: rule = %s, children = %s", rule, children);

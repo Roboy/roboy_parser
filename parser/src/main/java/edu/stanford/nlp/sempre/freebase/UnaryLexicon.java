@@ -8,6 +8,7 @@ import edu.stanford.nlp.sempre.freebase.lexicons.EntrySource;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.LexiconValue;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.UnaryLexicalEntry;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.MapUtils;
 import fig.basic.Option;
 import fig.basic.StopWatchSet;
@@ -116,7 +117,7 @@ public final class UnaryLexicon {
   }
 
   public void sortLexiconByFeedback(Params params) {
-    StopWatchSet.begin("UnaryLexicon.sortLexiconByFeedback");
+    StopWatchSetController.begin("UnaryLexicon.sortLexiconByFeedback");
     LogController.log("Number of entries: " + lexemeToEntryList.size());
     UnaryLexEntrybyFeaturesComparator comparator = new UnaryLexEntrybyFeaturesComparator(params);
     for (String lexeme : lexemeToEntryList.keySet()) {
@@ -130,7 +131,7 @@ public final class UnaryLexicon {
         }
       }
     }
-    StopWatchSet.end();
+    StopWatchSetController.end();
   }
 
   public class UnaryLexEntrybyFeaturesComparator implements Comparator<UnaryLexicalEntry> {

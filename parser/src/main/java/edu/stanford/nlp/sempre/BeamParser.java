@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
 import edu.stanford.nlp.sempre.roboy.lexicons.word2vec.Word2vec;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 import sun.security.krb5.Config;
@@ -158,10 +159,10 @@ class BeamParserState extends ChartParserState {
     if (ConfigManager.DEBUG >= 6) LogController.logs("applyRule %s %s %s %s", start, end, rule, children);
     try {
       if (mode == Mode.full) {
-        StopWatchSet.begin(rule.getSemRepn());
+        StopWatchSetController.begin(rule.getSemRepn());
         DerivationStream results = rule.sem.call(ex,
             new SemanticFn.CallInfo(rule.lhs, start, end, rule, ImmutableList.copyOf(children)));
-        StopWatchSet.end();
+        StopWatchSetController.end();
         while (results.hasNext()) {
           Derivation newDeriv = results.next();
           featurizeAndScoreDerivation(newDeriv);

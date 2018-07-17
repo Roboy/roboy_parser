@@ -2,6 +2,8 @@ package edu.stanford.nlp.sempre;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 
@@ -111,7 +113,7 @@ public class Learner {
 
       // Clear
       for (String group : dataset.groups())
-        meanEvaluations.put(group, new Evaluation());
+        meanEvaluations.put(group, new EvaluationController());
 
       // Test and train
       for (String group : dataset.groups()) {
@@ -126,7 +128,7 @@ public class Learner {
         Evaluation eval = processExamples(iter, group, dataset.examples(group), updateWeights);
         MapUtils.addToList(evaluations, group, eval);
         meanEvaluations.get(group).add(eval);
-        StopWatchSet.logStats();
+        StopWatchSetController.logStats();
         writeParams(iter);
       }
       LogController.end_track();
@@ -165,7 +167,7 @@ public class Learner {
 
   private Evaluation processExamples(int iter, String group,
       List<Example> examples, boolean computeExpectedCounts) {
-    Evaluation evaluation = new Evaluation();
+    Evaluation evaluation = new EvaluationController();
 
     if (examples.size() == 0)
       return evaluation;
@@ -288,14 +290,14 @@ public class Learner {
   }
 
   private ParserState parseExample(Params params, Example ex, boolean computeExpectedCounts) {
-    StopWatchSet.begin("Parser.parse");
+    StopWatchSetController.begin("Parser.parse");
     ParserState res = this.parser.parse(params, ex, computeExpectedCounts);
-    StopWatchSet.end();
+    StopWatchSetController.end();
     return res;
   }
 
   private void updateWeights(Map<String, Double> counts) {
-    StopWatchSet.begin("Learner.updateWeights");
+    StopWatchSetController.begin("Learner.updateWeights");
     LogController.begin_track("Updating learner weights");
     double sum = 0;
     for (double v : counts.values()) sum += v * v;
@@ -307,7 +309,7 @@ public class Learner {
       params.log();
     counts.clear();
     LogController.end_track();
-    StopWatchSet.end();
+    StopWatchSetController.end();
   }
 
   // Print summary over all examples

@@ -29,6 +29,7 @@ import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.SemanticFn;
 import edu.stanford.nlp.sempre.Trie;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.Evaluation;
 import fig.basic.IOUtils;
 import fig.basic.IntRef;
@@ -309,10 +310,10 @@ class InteractiveBeamParserState extends ChartParserState {
       LogController.logs("applyRule %s %s %s %s", start, end, rule, children);
     try {
       if (mode == Mode.full) {
-        StopWatchSet.begin(rule.getSemRepn());
+        StopWatchSetController.begin(rule.getSemRepn());
         DerivationStream results = rule.sem.call(ex,
                 new SemanticFn.CallInfo(rule.lhs, start, end, rule, ImmutableList.copyOf(children)));
-        StopWatchSet.end();
+        StopWatchSetController.end();
         while (results.hasNext()) {
           Derivation newDeriv = results.next();
           featurizeAndScoreDerivation(newDeriv);

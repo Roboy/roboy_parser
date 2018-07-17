@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import jline.console.ConsoleReader;
 
@@ -334,7 +335,7 @@ public class Master {
       for (Session otherSession : sessions.values())
         LogController.log(otherSession + (session == otherSession ? " *" : ""));
       LogController.end_track();
-      StopWatchSet.logStats();
+      StopWatchSetController.logStats();
     } else if (command.equals("reload")) {
       builder.build();
     } else if (command.equals("grammar")) {

@@ -2,6 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.util.*;
@@ -68,7 +69,7 @@ public class FeatureExtractor {
   // This function is called on every sub-Derivation, so we should extract only
   // features which depend in some way on |deriv|, not just on its children.
   public void extractLocal(Example ex, Derivation deriv) {
-    StopWatchSet.begin("FeatureExtractor.extractLocal");
+    StopWatchSetController.begin("FeatureExtractor.extractLocal");
     extractRuleFeatures(ex, deriv);
     extractSpanFeatures(ex, deriv);
 //    extractDenotationFeatures(ex, deriv);
@@ -82,7 +83,7 @@ public class FeatureExtractor {
       featureComputer.extractLocal(ex, deriv);
 //    for (String key:deriv.getLocalFeatureVector().toMap().keySet())
 //      LogController.logs("Key: %s -> Entry: %s",key,deriv.getAllFeatureVector().get(key));
-    StopWatchSet.end();
+    StopWatchSetController.end();
   }
 
   // This function is called on every sub-Derivation, so we should extract only

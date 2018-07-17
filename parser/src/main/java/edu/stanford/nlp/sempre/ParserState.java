@@ -2,6 +2,7 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
 import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
@@ -38,7 +39,7 @@ public abstract class ParserState {
   //// Output
 
   public final List<Derivation> predDerivations = new ArrayList<Derivation>();
-  public final Evaluation evaluation = new Evaluation();
+  public final Evaluation evaluation = new EvaluationController();
 
   // If computeExpectedCounts is true (for learning), then fill this out.
   public Map<String, Double> expectedCounts;

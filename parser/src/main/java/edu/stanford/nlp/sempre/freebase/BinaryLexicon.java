@@ -9,6 +9,7 @@ import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.BinaryLexicalEntry
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.LexiconValue;
 import edu.stanford.nlp.sempre.freebase.lexicons.normalizers.EntryNormalizer;
 import edu.stanford.nlp.sempre.freebase.lexicons.normalizers.PrepDropNormalizer;
+import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.exec.Execution;
 
@@ -154,7 +155,7 @@ public final class BinaryLexicon {
   }
 
   public void updateLexicon(Pair<String, Formula> lexemeFormulaPair, int support) {
-    StopWatchSet.begin("BinaryLexicon.updateLexicon");
+    StopWatchSetController.begin("BinaryLexicon.updateLexicon");
     if (opts.verbose > 0)
       LogController.logs("Pair=%s, score=%s", lexemeFormulaPair, support);
     boolean exists = false;
@@ -186,11 +187,11 @@ public final class BinaryLexicon {
       LogController.logs("Adding new binary entry=%s", newEntry);
 
     }
-    StopWatchSet.end();
+    StopWatchSetController.end();
   }
 
   public void sortLexiconByFeedback(Params params) {
-    StopWatchSet.begin("BinaryLexicon.sortLexiconByFeedback");
+    StopWatchSetController.begin("BinaryLexicon.sortLexiconByFeedback");
     LogController.log("Number of entries: " + lexemeToEntryList.size());
     BinaryLexEntrybyFeaturesComparator comparator =
             new BinaryLexEntrybyFeaturesComparator(params);
@@ -220,7 +221,7 @@ public final class BinaryLexicon {
     }
 
 
-    StopWatchSet.end();
+    StopWatchSetController.end();
   }
 
   public class BinaryLexEntrybyFeaturesComparator implements Comparator<BinaryLexicalEntry> {

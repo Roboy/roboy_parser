@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.BinaryLexicalEntry;
+import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
 import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.apache.lucene.queryparser.classic.ParseException;
 
@@ -29,7 +30,7 @@ public class LexiconFn extends SemanticFn {
 
   public static Options opts = new Options();
   private static Lexicon lexicon;
-  public static Evaluation lexEval = new Evaluation();
+  public static Evaluation lexEval = new EvaluationController();
 
   private String mode;  // unary, binary, or entity
   private EntityLexicon.SearchStrategy entitySearchStrategy;  // For entities, how to search
