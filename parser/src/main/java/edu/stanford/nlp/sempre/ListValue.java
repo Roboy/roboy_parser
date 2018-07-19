@@ -3,7 +3,7 @@ package edu.stanford.nlp.sempre;
 import java.util.*;
 
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 
 public class ListValue extends Value {
   public final List<Value> values;
@@ -30,7 +30,7 @@ public class ListValue extends Value {
 
   public void log() {
     for (Value value : values)
-      LogController.logs("%s", value);
+      NLULoggerController.logs("%s", value);
   }
 
   @Override

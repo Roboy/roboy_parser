@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class SelectFn extends SemanticFn {
                 List<String> posTags = ex.languageInfo.posTags;
                 features.add("skipPos", posTags.get(index));
                 if (opts.verbose > 0) {
-                  LogController.logs(
+                  NLULoggerController.logs(
                           "SelectFn: adding pos-skipping feature, pos: %s, word: %s",
                           posTags.get(index), ex.languageInfo.tokens.get(index));
                 }

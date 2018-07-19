@@ -23,7 +23,7 @@ import edu.stanford.nlp.sempre.LambdaFormula;
 import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.SemanticFn;
 import edu.stanford.nlp.sempre.VariableFormula;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
 import fig.basic.Option;
 
@@ -110,12 +110,12 @@ public class GrammarInducer {
       }
 
       if (opts.verbose > 1) {
-        LogController.logs("Simple Packing", chartList.size());
-        LogController.logs("chartList.size = %d", chartList.size());
-        LogController.log("Potential packings: ");
-        this.matches.forEach(d -> LogController.logs("%f: %s\t %s", d.getScore(), d.formula, d.allAnchored()));
-        LogController.logs("packing: %s", packing);
-        LogController.logs("formulaToCat: %s", formulaToCat);
+        NLULoggerController.logs("Simple Packing", chartList.size());
+        NLULoggerController.logs("chartList.size = %d", chartList.size());
+        NLULoggerController.log("Potential packings: ");
+        this.matches.forEach(d -> NLULoggerController.logs("%f: %s\t %s", d.getScore(), d.formula, d.allAnchored()));
+        NLULoggerController.logs("packing: %s", packing);
+        NLULoggerController.logs("formulaToCat: %s", formulaToCat);
       }
     }
     if (opts.useBestPacking) {
@@ -131,11 +131,11 @@ public class GrammarInducer {
       }
 
       if (opts.verbose > 1) {
-        LogController.logs("chartList.size = %d", chartList.size());
-        LogController.log("Potential packings: ");
-        this.matches.forEach(d -> LogController.logs("%f: %s\t", d.getScore(), d.formula));
-        LogController.logs("BestPacking: %s", bestPacking);
-        LogController.logs("formulaToCat: %s", formulaToCat);
+        NLULoggerController.logs("chartList.size = %d", chartList.size());
+        NLULoggerController.log("Potential packings: ");
+        this.matches.forEach(d -> NLULoggerController.logs("%f: %s\t", d.getScore(), d.formula));
+        NLULoggerController.logs("BestPacking: %s", bestPacking);
+        NLULoggerController.logs("formulaToCat: %s", formulaToCat);
       }
     }
 
@@ -145,12 +145,12 @@ public class GrammarInducer {
 
   private void filterRule(Rule rule) {
     if (rule.isCatUnary()) {
-      LogController.logs("GrammarInducer.filterRule: not allowing CatUnary rules %s", rule.toString());
+      NLULoggerController.logs("GrammarInducer.filterRule: not allowing CatUnary rules %s", rule.toString());
       return;
     }
 
     if (RHSs.contains(rule.rhs.toString())) {
-      LogController.logs("GrammarInducer.filterRule: already have %s", rule.toString());
+      NLULoggerController.logs("GrammarInducer.filterRule: already have %s", rule.toString());
       return;
     }
     int numNT = 0;
@@ -159,7 +159,7 @@ public class GrammarInducer {
     }
 
     if (numNT > GrammarInducer.opts.maxNonterminals ) {
-      LogController.logs("GrammarInducer.filterRule: too many nontermnimals (max %d) %s", GrammarInducer.opts.maxNonterminals, rule.rhs.toString());
+      NLULoggerController.logs("GrammarInducer.filterRule: too many nontermnimals (max %d) %s", GrammarInducer.opts.maxNonterminals, rule.rhs.toString());
       return;
     }
     inducedRules.add(rule);
@@ -276,7 +276,7 @@ public class GrammarInducer {
           bestOverall = bestEndsAtI.get(j);
       }
       if (opts.verbose > 1)
-        LogController.logs("maximalAtI[%d] = %f: %s, BlockingIndex: %d", i, bestOverall.score, bestOverall.packing,
+        NLULoggerController.logs("maximalAtI[%d] = %f: %s, BlockingIndex: %d", i, bestOverall.score, bestOverall.packing,
                 blockingIndex(matches, i));
       if (bestOverall.score > Double.NEGATIVE_INFINITY)
         maximalAtI.add(i, bestOverall);
@@ -385,7 +385,7 @@ public class GrammarInducer {
   private SemanticFn getSemantics(final Derivation def, List<Derivation> packings) {
     Formula baseFormula = def.grammarInfo.formula;
     if (opts.verbose > 0)
-      LogController.logs("getSemantics %s", baseFormula);
+      NLULoggerController.logs("getSemantics %s", baseFormula);
     if (packings.size() == 0) {
       SemanticFn constantFn = new ConstantFn();
       LispTree newTree = LispTree.proto.newList();

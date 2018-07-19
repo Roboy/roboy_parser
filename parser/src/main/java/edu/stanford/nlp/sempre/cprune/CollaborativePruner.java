@@ -3,7 +3,8 @@ package edu.stanford.nlp.sempre.cprune;
 import java.io.*;
 import java.util.*;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import edu.stanford.nlp.sempre.*;
 
 /**
@@ -57,10 +58,10 @@ public class CollaborativePruner {
    */
   public static void loadNeighbors() {
     if (opts.neighborFilePath == null) {
-      LogController.logs("neighborFilePath is null.");
+      NLULoggerController.logs("neighborFilePath is null.");
       return;
     }
-    LogController.begin_track("Loading cached neighbors from %s", opts.neighborFilePath);
+    NLULoggerController.begin_track("Loading cached neighbors from %s", opts.neighborFilePath);
     uidToCachedNeighbors = new HashMap<>();
     try {
       BufferedReader reader = IOUtils.openIn(opts.neighborFilePath);
@@ -75,7 +76,7 @@ public class CollaborativePruner {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public static void initialize(Example ex, Mode mode) {
@@ -119,7 +120,7 @@ public class CollaborativePruner {
     patternFreqEntries.sort(new ValueComparator<>(false));
 
     // Gather the patterns
-    LogController.begin_track("Predicted patterns");
+    NLULoggerController.begin_track("Predicted patterns");
     int rank = 0;
     Set<String> predictedRulesStrings = new HashSet<>();
     predictedPatterns = new HashMap<>();
@@ -127,14 +128,14 @@ public class CollaborativePruner {
       FormulaPattern newPattern = entry.getValue();
       predictedPatterns.put(newPattern.pattern, newPattern);
       predictedRulesStrings.addAll(customRules.get(newPattern.pattern));
-      LogController.logs((rank + 1) + ". " + newPattern.pattern + " (" + newPattern.frequency + ")");
+      NLULoggerController.logs((rank + 1) + ". " + newPattern.pattern + " (" + newPattern.frequency + ")");
       rank++;
       if (rank >= opts.maxPredictedPatterns)
         break;
     }
     // Gather the rules
     predictedRules = customGrammar.getRules(predictedRulesStrings);
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public static String getPatternString(Derivation deriv) {
@@ -165,7 +166,7 @@ public class CollaborativePruner {
 
     if (deriv.isRootCat() && deriv.compatibility == 1) {
       foundConsistentDerivation = true;
-      LogController.logs("Found consistent deriv: %s", deriv);
+      NLULoggerController.logs("Found consistent deriv: %s", deriv);
 
       String patternString = getPatternString(deriv);
       FormulaPattern newConsistentPattern = new FormulaPattern(patternString, 0);

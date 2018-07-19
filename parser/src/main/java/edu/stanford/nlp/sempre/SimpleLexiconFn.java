@@ -1,7 +1,8 @@
 package edu.stanford.nlp.sempre;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
+
 import java.util.*;
 
 /**
@@ -50,7 +51,7 @@ public class SimpleLexiconFn extends SemanticFn {
     List<SimpleLexicon.Entry> newEntries = new ArrayList<SimpleLexicon.Entry>();
     for (SimpleLexicon.Entry e : entries) {
       if (opts.verbose >= 3)
-        LogController.logs("SimpleLexiconFn: %s => %s [type = %s meet-> %s]", phrase, e.formula, e.type, restrictType.meet(e.type));
+        NLULoggerController.logs("SimpleLexiconFn: %s => %s [type = %s meet-> %s]", phrase, e.formula, e.type, restrictType.meet(e.type));
       if (!restrictType.toString().contains(e.type.toString())) {
         continue;
       }

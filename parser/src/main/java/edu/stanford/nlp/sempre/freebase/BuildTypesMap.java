@@ -1,9 +1,9 @@
 package edu.stanford.nlp.sempre.freebase;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.IOUtils;
 import fig.basic.MapUtils;
 import fig.basic.StrUtils;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.exec.Execution;
 
@@ -30,14 +30,14 @@ public class BuildTypesMap implements Runnable {
   Map<String, List<String>> types = new LinkedHashMap<String, List<String>>();
 
   public void run() {
-    LogController.begin_track("Reading %s", inPath);
+    NLULoggerController.begin_track("Reading %s", inPath);
     try {
       BufferedReader in = IOUtils.openIn(inPath);
       String line;
       int numLines = 0;
       while ((line = in.readLine()) != null) {
         String[] triple = Utils.parseTriple(line);
-        if (++numLines % 100000000 == 0) LogController.logs("%d lines", numLines);
+        if (++numLines % 100000000 == 0) NLULoggerController.logs("%d lines", numLines);
         if (triple == null) continue;
         if (!triple[1].equals("fb:type.object.type")) continue;
         if (keepOnlyEnIds && !triple[0].startsWith("fb:en.")) continue;
@@ -47,15 +47,15 @@ public class BuildTypesMap implements Runnable {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
 
-    LogController.begin_track("Writing to %s", outPath);
+    NLULoggerController.begin_track("Writing to %s", outPath);
     PrintWriter out = IOUtils.openOutHard(outPath);
     for (Map.Entry<String, List<String>> e : types.entrySet()) {
       out.println(e.getKey() + "\t" + StrUtils.join(e.getValue(), ","));
     }
     out.close();
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public static void main(String[] args) {

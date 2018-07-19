@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Pair;
 
 /**
@@ -41,7 +41,7 @@ public class PairListValue extends Value {
 
   public void log() {
     for (Pair<Value, Value> pair : pairs)
-      LogController.logs("%s | %s", pair.getFirst(), pair.getSecond());
+      NLULoggerController.logs("%s | %s", pair.getFirst(), pair.getSecond());
   }
 
   @Override

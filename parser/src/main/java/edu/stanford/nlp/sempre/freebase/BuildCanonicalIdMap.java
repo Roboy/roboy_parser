@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre.freebase;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.IOUtils;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.exec.Execution;
 
@@ -45,7 +45,7 @@ public class BuildCanonicalIdMap implements Runnable {
 
   void computeAllowableIds() {
     // Compute allowable ids
-    LogController.begin_track("Compute allowable ids");
+    NLULoggerController.begin_track("Compute allowable ids");
     try {
       BufferedReader in = IOUtils.openIn(rawPath);
       String line;
@@ -53,19 +53,19 @@ public class BuildCanonicalIdMap implements Runnable {
       while (numInputLines < maxInputLines && (line = in.readLine()) != null) {
         numInputLines++;
         if (numInputLines % 10000000 == 0)
-          LogController.logs("Read %s lines, %d allowable ids", numInputLines, allowableIds.size());
+          NLULoggerController.logs("Read %s lines, %d allowable ids", numInputLines, allowableIds.size());
         String[] tokens = Utils.parseTriple(line);
         if (tokens == null) continue;
         String arg1 = tokens[0];
         if (!arg1.startsWith("fb:g.") && !arg1.startsWith("fb:m."))
           allowableIds.add(arg1);
       }
-      LogController.logs("%d allowable ids", allowableIds.size());
+      NLULoggerController.logs("%d allowable ids", allowableIds.size());
       in.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   void flush(String mid, List<String> ids) {
@@ -108,7 +108,7 @@ public class BuildCanonicalIdMap implements Runnable {
       while (numInputLines < maxInputLines && (line = in.readLine()) != null) {
         numInputLines++;
         if (numInputLines % 10000000 == 0)
-          LogController.logs("Read %s lines, %d entities", numInputLines, numMids);
+          NLULoggerController.logs("Read %s lines, %d entities", numInputLines, numMids);
         String[] tokens = Utils.parseTriple(line);
         if (tokens == null) continue;
         String arg1 = tokens[0];

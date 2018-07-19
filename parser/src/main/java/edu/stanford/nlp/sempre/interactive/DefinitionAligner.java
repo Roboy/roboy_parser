@@ -13,7 +13,7 @@ import com.google.common.collect.Sets;
 import edu.stanford.nlp.sempre.Derivation;
 import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.interactive.GrammarInducer.ParseStatus;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Option;
 
 /**
@@ -76,13 +76,13 @@ public class DefinitionAligner {
 
   public static List<Rule> getRules(List<String> head, List<String> def, Derivation deriv, List<Derivation> chartList) {
     if (opts.verbose > 0)
-      LogController.logs("DefinitionAligner.chartList: %s", chartList);
+      NLULoggerController.logs("DefinitionAligner.chartList: %s", chartList);
 
     DefinitionAligner aligner = new DefinitionAligner(head, def, deriv, chartList);
 
     List<Rule> allAlignedRules = Lists.newArrayList();
     if (opts.verbose > 0)
-      LogController.logs("DefinitionAligner.allMatches.size(): %d", aligner.allMatches.size());
+      NLULoggerController.logs("DefinitionAligner.allMatches.size(): %d", aligner.allMatches.size());
 
     for (int i = 0; i < aligner.allMatches.size() && i <= opts.maxMatches; i++) {
       Match match = aligner.allMatches.get(i);
@@ -93,18 +93,18 @@ public class DefinitionAligner {
       // filter out core
       List<Derivation> currentParses = chartList.stream().filter(d -> {
         if (opts.verbose > 1)
-          LogController.logs("DefinitionAligner.chartList.d: %s", d);
+          NLULoggerController.logs("DefinitionAligner.chartList.d: %s", d);
         return (d.start == match.start && d.end == match.end);
       }).collect(Collectors.toList());
 
       if (opts.verbose > 1)
-        LogController.logs("DefinitionAligner.Match: %s", match);
+        NLULoggerController.logs("DefinitionAligner.Match: %s", match);
       if (opts.verbose > 1)
-        LogController.logs("DefinitionAligner.currentParses: %s", currentParses);
+        NLULoggerController.logs("DefinitionAligner.currentParses: %s", currentParses);
 
       if (GrammarInducer.getParseStatus(currentParses) != ParseStatus.Core) {
         if (opts.verbose > 1)
-          LogController.logs("DefinitionAligner.NotCore: %s", currentParses);
+          NLULoggerController.logs("DefinitionAligner.NotCore: %s", currentParses);
         GrammarInducer grammarInducer = new GrammarInducer(head, match.deriv, filteredList);
         allAlignedRules.addAll(grammarInducer.getRules());
       }
@@ -121,7 +121,7 @@ public class DefinitionAligner {
     this.defTokens = defTokens;
     this.chartMap = GrammarInducer.makeChartMap(chartList);
     if (opts.verbose > 0)
-      LogController.logs("DefinitionAligner: head '%s' as body: '%s'", headTokens, defTokens);
+      NLULoggerController.logs("DefinitionAligner: head '%s' as body: '%s'", headTokens, defTokens);
     if (Math.abs(headTokens.size() - defTokens.size()) >= 4)
       return;
     recursiveMatch(def);
@@ -136,7 +136,7 @@ public class DefinitionAligner {
           continue;
         if (isMatch(def, start, end)) {
           if (opts.verbose > 0)
-            LogController.logs("Matched head(%d,%d)=%s with deriv(%d,%d)=%s: %s", start, end, headTokens.subList(start, end),
+            NLULoggerController.logs("Matched head(%d,%d)=%s with deriv(%d,%d)=%s: %s", start, end, headTokens.subList(start, end),
                     def.start, def.end, defTokens.subList(def.start, def.end), def);
           allMatches.add(new Match(def, start, end));
           return;
@@ -155,7 +155,7 @@ public class DefinitionAligner {
     if (chartMap.containsKey(GrammarInducer.catFormulaKey(def)))
       return false;
     if (opts.verbose > 0)
-      LogController.logs("checkingLengths (%d, %d) - (%d, %d)", start, end, def.start, def.end);
+      NLULoggerController.logs("checkingLengths (%d, %d) - (%d, %d)", start, end, def.start, def.end);
     if (Math.abs((end - start) - (def.end - def.start)) >= opts.maxLengthDifference)
       return false;
     if (opts.strategies.contains(Strategies.ExactExclusion) && exactExclusion(def, start, end))
@@ -198,7 +198,7 @@ public class DefinitionAligner {
 
   private boolean exactExclusion(Derivation def, int start, int end) {
     if (opts.verbose > 0)
-      LogController.log("In exactExclusion");
+      NLULoggerController.log("In exactExclusion");
     if (end - start > opts.maxExactExclusionLength)
       return false;
 
@@ -207,9 +207,9 @@ public class DefinitionAligner {
     boolean sufixEq = window(end, end + opts.windowSize, headTokens)
             .equals(window(def.end, def.end + opts.windowSize, defTokens));
     if (opts.verbose > 0)
-      LogController.logs("%b : %b", prefixEq, sufixEq);
+      NLULoggerController.logs("%b : %b", prefixEq, sufixEq);
     if (opts.verbose > 0)
-      LogController.logs("(%d,%d)-head(%d,%d): %b %b %s %s", def.start, def.end, start, end, prefixEq, sufixEq,
+      NLULoggerController.logs("(%d,%d)-head(%d,%d): %b %b %s %s", def.start, def.end, start, end, prefixEq, sufixEq,
               window(end, end + opts.windowSize, headTokens), window(def.end, def.end + opts.windowSize, defTokens));
     if (!prefixEq || !sufixEq)
       return false;
@@ -222,7 +222,7 @@ public class DefinitionAligner {
   // exact match plus big
   private boolean cmdSet(Derivation def, int start, int end) {
     if (opts.verbose > 0)
-      LogController.log("In exactPlusBig");
+      NLULoggerController.log("In exactPlusBig");
     // match only beginning and end
     boolean cmdSet = (end == headTokens.size()) && (start > 0) && def.end == defTokens.size() && def.start > 0;
     if (cmdSet && headTokens.subList(0, start).equals(defTokens.subList(0, start)))

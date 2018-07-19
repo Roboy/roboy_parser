@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre;
 
 import java.util.*;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
 /**
  * Represent a knowledge graph explicitly as triples (e1, r, e2).

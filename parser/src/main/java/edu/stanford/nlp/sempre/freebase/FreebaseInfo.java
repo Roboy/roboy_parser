@@ -6,8 +6,8 @@ import com.google.common.collect.HashBiMap;
 import edu.stanford.nlp.sempre.freebase.FbFormulasInfo.BinaryFormulaInfo;
 import edu.stanford.nlp.sempre.freebase.FbFormulasInfo.UnaryFormulaInfo;
 import edu.stanford.nlp.sempre.*;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -95,7 +95,7 @@ public final class FreebaseInfo {
    * @throws IOException
    */
   public void readSchema() throws IOException {
-    LogController.begin_track("Loading Freebase schema: %s", opts.schemaPath);
+    NLULoggerController.begin_track("Loading Freebase schema: %s", opts.schemaPath);
     BufferedReader in = IOUtils.openInHard(opts.schemaPath);
 
     // Include mediator types
@@ -133,11 +133,11 @@ public final class FreebaseInfo {
         else throw new RuntimeException("Invalid xsd:boolean: " + arg2);
       } else if (property.equals("fb:type.property.schema")) {  // schema => type1
         if (type1Map.containsKey(arg1))
-          LogController.errors("%s already has type1 %s, assigning %s", arg1, type1Map.get(arg1), arg2);
+          NLULoggerController.errors("%s already has type1 %s, assigning %s", arg1, type1Map.get(arg1), arg2);
         type1Map.put(arg1, arg2);
       } else if (property.equals("fb:type.property.expected_type")) {  // expected_type => type2
         if (type2Map.containsKey(arg1))
-          LogController.errors("%s already has type2 %s, assigning %s", arg1, type2Map.get(arg1), arg2);
+          NLULoggerController.errors("%s already has type2 %s, assigning %s", arg1, type2Map.get(arg1), arg2);
         type2Map.put(arg1, arg2);
       } else if (property.equals("fb:type.property.unit")) {
         unit2Map.put(arg1, arg2);
@@ -173,8 +173,8 @@ public final class FreebaseInfo {
       if (property.equals(NAME))
         nameMap.put(arg1, edu.stanford.nlp.sempre.freebase.Utils.parseStr(arg2));
     }
-    LogController.logs("%d CVTs, (%d,%d) property types, %d property units", cvts.size(), type1Map.size(), type2Map.size(), unit2Map.size());
-    LogController.end_track();
+    NLULoggerController.logs("%d CVTs, (%d,%d) property types, %d property units", cvts.size(), type1Map.size(), type2Map.size(), unit2Map.size());
+    NLULoggerController.end_track();
   }
 
   public Map<Formula, BinaryFormulaInfo> createBinaryFormulaInfoMap() {
@@ -285,7 +285,7 @@ public final class FreebaseInfo {
   }
   public static String uri2id(String uri) {
     if (!uri.startsWith(freebaseNamespace)) {
-      LogController.logs("Warning: invalid Freebase uri: %s", uri);
+      NLULoggerController.logs("Warning: invalid Freebase uri: %s", uri);
       // Don't do any conversion; this is not necessarily the best thing to do.
       return uri;
     }

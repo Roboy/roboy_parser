@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import org.testng.collections.Lists;
 
 import com.google.common.collect.ImmutableList;
 
 import edu.stanford.nlp.sempre.ActionFormula;
-import edu.stanford.nlp.sempre.BeamParser;
 import edu.stanford.nlp.sempre.Derivation;
 import edu.stanford.nlp.sempre.Example;
 import edu.stanford.nlp.sempre.Formula;
@@ -22,7 +22,6 @@ import edu.stanford.nlp.sempre.Parser;
 import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.SemanticFn;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.basic.Ref;
 
@@ -60,7 +59,7 @@ public final class InteractiveUtils {
 
   public static Derivation stripBlock(Derivation deriv) {
     if (opts.verbose > 0)
-      LogController.logs("StripBlock %s %s %s", deriv, deriv.rule, deriv.cat);
+      NLULoggerController.logs("StripBlock %s %s %s", deriv, deriv.rule, deriv.cat);
     while ((deriv.rule.sem instanceof BlockFn || deriv.rule.sem instanceof IdentityFn) && deriv.children.size() == 1) {
       deriv = deriv.child(0);
     }
@@ -81,7 +80,7 @@ public final class InteractiveUtils {
       String formula = pair.get(1);
 
       if (formula.equals("()")) {
-        LogController.logs("Error: Got empty formula");
+        NLULoggerController.logs("Error: Got empty formula");
         continue;
       }
 
@@ -91,7 +90,7 @@ public final class InteractiveUtils {
       Example ex = b.createExample();
       ex.preprocess();
 
-      LogController.logs("Parsing body: %s", ex.utterance);
+      NLULoggerController.logs("Parsing body: %s", ex.utterance);
       ((InteractiveBeamParser)parser).parseWithoutExecuting(params, ex, false);
 
       boolean found = false;
@@ -105,7 +104,7 @@ public final class InteractiveUtils {
         }
       }
       if (!found && !formula.equals("?")) {
-        LogController.errors("matching formula not found: %s :: %s", utt, formula);
+        NLULoggerController.errors("matching formula not found: %s :: %s", utt, formula);
         numFailed++;
       }
       // just making testing easier, use top derivation when we formula is not
@@ -160,7 +159,7 @@ public final class InteractiveUtils {
   }
 
   public static synchronized void addRuleInteractive(Rule rule, Parser parser) {
-    LogController.logs("addRuleInteractive: %s", rule);
+    NLULoggerController.logs("addRuleInteractive: %s", rule);
     if (parser instanceof InteractiveBeamParser) {
       parser.addRule(rule);
     } else {

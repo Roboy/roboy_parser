@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * Represents a logical predicate.
@@ -26,7 +26,7 @@ public class NameValue extends Value {
 
   public NameValue(String id, String description) {
     if (id == null) {
-      LogController.errors("Got null id, description is %s", description);
+      NLULoggerController.errors("Got null id, description is %s", description);
       id = "fb:en.null";
     }
     this.id = id;

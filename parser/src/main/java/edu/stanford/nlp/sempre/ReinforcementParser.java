@@ -1,8 +1,8 @@
 package edu.stanford.nlp.sempre;
 
 import com.google.common.base.Joiner;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import fig.exec.Execution;
 import fig.prob.SampleUtils;
 
@@ -73,7 +73,7 @@ public class ReinforcementParser extends Parser {
     if (Parser.opts.visualizeChartFilling)
       this.chartFillOut = IOUtils.openOutAppendEasy(Execution.getFile("chartfill"));
     searchPrefix = opts.simulateNonRlObjective ? "" : SEARCH_PREFIX;
-    LogController.logs("ReinforcementParser(): search prefix is %s", searchPrefix);
+    NLULoggerController.logs("ReinforcementParser(): search prefix is %s", searchPrefix);
   }
 
   private void addToSiblingMap(String keySibling, String valueSibling, Rule rule,
@@ -227,7 +227,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
         deriv.score += child.score;
 
     if (parser.verbose(3))
-      LogController.logs(
+      NLULoggerController.logs(
               "featurizeAndScore(score=%s) %s %s: %s [rule: %s]",
               Fmt.D(deriv.score), deriv.cat, ex.spanString(deriv.start, deriv.end), deriv, deriv.rule);
     numOfFeaturizedDerivs++;
@@ -241,14 +241,14 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     agenda.add(new PrioritizedDerivationStream(derivationStream, priority, probSum), priority); // when adding to agenda probsum is 0
 
     if (parser.verbose(3)) {
-      LogController.logs("ReinforcementParser: adding to agenda: size=%s, priority=%s, deriv=%s(%s,%s), formula=%s,|pushed|=%s",
+      NLULoggerController.logs("ReinforcementParser: adding to agenda: size=%s, priority=%s, deriv=%s(%s,%s), formula=%s,|pushed|=%s",
               agenda.size(), priority, deriv.cat, deriv.start, deriv.end, deriv.formula, completeDerivationsPushed);
     }
   }
 
   public boolean continueParsing() {
     if (agenda.size() == 0) {
-      LogController.log("Agenda is empty");
+      NLULoggerController.log("Agenda is empty");
       return false;
     }
 
@@ -264,7 +264,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     expectedCounts = new HashMap<>();
     if (computeExpectedCounts && !ReinforcementParser.opts.simulateNonRlObjective) { // when updating params we first find a correct derivation to set the oracle sampler
       // TODO(jonathan): move to ReinforcementParser, not ParserState
-      LogController.begin_track("Finding oracle derivation");
+      NLULoggerController.begin_track("Finding oracle derivation");
       oracleState = new StateBuilder()
               .parser(this.parser)
               .params(this.params)
@@ -272,29 +272,29 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
               .samplingStrategy("agenda")
               .computeExpectedCounts(false).createState(); // update params is false preventing an infinite loop
       oracleState.infer();
-      LogController.end_track();
+      NLULoggerController.end_track();
       if (oracleState.correctDerivations.isEmpty()) {
-        LogController.logs("No oracle derivation found");
+        NLULoggerController.logs("No oracle derivation found");
         return;
       }
     }
     createSampler(oracleState); // we can only create the sampler after we have the oracle derivation
 
-    LogController.begin_track("Coarse parsing");
+    NLULoggerController.begin_track("Coarse parsing");
     coarseParserState = null;
     if (ReinforcementParser.opts.efficientCoarsePrune)
       coarseParserState = coarseParser.getCoarsePrunedChart(ex);
-    LogController.end_track();
+    NLULoggerController.end_track();
 
     // draw a sample to compute gradient and expected reward
-    LogController.begin_track("ReinforcementParserState.inferBySampling");
+    NLULoggerController.begin_track("ReinforcementParserState.inferBySampling");
     sampleHistoryAndInfer();
-    LogController.end_track();
+    NLULoggerController.end_track();
 
     // Compute gradient
     setPredDerivations();
     if (parser.verbose(3))
-      LogController.logs("Expected reward = %s", objectiveValue);
+      NLULoggerController.logs("Expected reward = %s", objectiveValue);
     visualizeChart();
   }
 
@@ -326,7 +326,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
               sampledDerivation.score + " != " + pdsAndProbability.getFirst().priority;
 
       if (parser.verbose(2)) {
-        LogController.begin_track("Item %d (|agenda|=%d), priority %s: |item|=%s -> %s %s %s [%s], prob=%s",
+        NLULoggerController.begin_track("Item %d (|agenda|=%d), priority %s: |item|=%s -> %s %s %s [%s], prob=%s",
                 numItemsSampled, agenda.size() + 1, Fmt.D(pdsAndProbability.getFirst().priority), sampledDerivations.estimatedSize(),
                 sampledDerivation.cat, ex.spanString(sampledDerivation.start, sampledDerivation.end), sampledDerivation,
                 sampledDerivation.rule, pdsAndProbability.getSecond());
@@ -350,13 +350,13 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       // only after update of params we can change the chart and the agenda
       if (addToBoundedChart(sampledDerivation)) {
         if (parser.verbose(5))
-          LogController.logs("ReinforcementParserState.infer: adding to chart %s(%s,%s) formula=%s",
+          NLULoggerController.logs("ReinforcementParserState.infer: adding to chart %s(%s,%s) formula=%s",
                   sampledDerivation.cat, sampledDerivation.start, sampledDerivation.end, sampledDerivation.formula);
         combineWithChartDerivations(sampledDerivation);
       }
       addToAgenda(sampledDerivations);
       if (parser.verbose(2))
-        LogController.end_track();
+        NLULoggerController.end_track();
     }
 
     finalizeSearchExpectedCounts(); // gradient for remaining agenda items
@@ -373,7 +373,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     sampler.unroll(); // if multiplicative, then unroll oracle stuff (ignore \beta currently!)
 
     if (parser.verbose(3))
-      LogController.begin_track("Unrolling high probability streams");
+      NLULoggerController.begin_track("Unrolling high probability streams");
 
     double lb=Double.NEGATIVE_INFINITY;
     int numOfHiddenStreams = 0;
@@ -384,7 +384,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     }
 
     if (parser.verbose(3))
-      LogController.logs("unrollHighProbStreams(): |agenda|=%s, lb=%s, |hiddenstreams|=%s", agenda.size(), lb, numOfHiddenStreams);
+      NLULoggerController.logs("unrollHighProbStreams(): |agenda|=%s, lb=%s, |hiddenstreams|=%s", agenda.size(), lb, numOfHiddenStreams);
 
     List<Pair<DerivationStream, Double>> derivsToAdd = new ArrayList<>();
     List<Integer> indicesToRemove = new ArrayList<>();
@@ -400,7 +400,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
         DerivationStream derivStream = SingleDerivationStream.constant(nextDeriv);
         if (parser.verbose(3) && derivStream.hasNext()) {
           Derivation deriv  = derivStream.peek();
-          LogController.logs("unrollIllegalStreams(): add deriv=%s(%s,%s) [%s] score=%s, |stream|=%s",
+          NLULoggerController.logs("unrollIllegalStreams(): add deriv=%s(%s,%s) [%s] score=%s, |stream|=%s",
                   deriv.cat, deriv.start, deriv.end, deriv.formula, deriv.score, pds.derivStream.estimatedSize());
         }
         derivsToAdd.add(Pair.newPair(derivStream, pds.probSum));
@@ -428,9 +428,9 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       addToAgenda(pair.getFirst(), pair.getSecond());
 
     if (parser.verbose(3))
-      LogController.logs("unrollHighProbStreams(): |agenda|=%s", agenda.size());
+      NLULoggerController.logs("unrollHighProbStreams(): |agenda|=%s", agenda.size());
     if (parser.verbose(3))
-      LogController.end_track();
+      NLULoggerController.end_track();
   }
 
   private boolean illegalStream(DerivationStream derivStream, double logSum, int estimatedSize, int numOfHiddenStreams) {
@@ -439,7 +439,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     double upperBound = Math.log(estimatedSize) + Math.log(numOfHiddenStreams); //log(M(g)|G'|)
 
     if (parser.verbose(3))
-      LogController.logs("IllegalStream(): score=%s, logsum=%s, |stream|=%s, |hiddenstreams|=%s, deriv=%s(%s,%s) %s, sum=%s",
+      NLULoggerController.logs("IllegalStream(): score=%s, logsum=%s, |stream|=%s, |hiddenstreams|=%s, deriv=%s(%s,%s) %s, sum=%s",
               deriv.score, logSum, estimatedSize, numOfHiddenStreams, deriv.cat, deriv.start, deriv.end, deriv.formula, firstItemLogProb+upperBound);
 
     return (firstItemLogProb+upperBound) > LOG_SMALL_PROB;
@@ -450,7 +450,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     double gapFromMax = deriv.score - maxScore;
     double threshold = LOG_SMALL_PROB - Math.log(estimatedSize);
     if (parser.verbose(3))
-      LogController.logs("isHighProbStream(): gapFromMax=%s, threshold=%s, deriv=%s(%s,%s) %s |stream|=%s", gapFromMax, threshold,
+      NLULoggerController.logs("isHighProbStream(): gapFromMax=%s, threshold=%s, deriv=%s(%s,%s) %s |stream|=%s", gapFromMax, threshold,
               deriv.cat, deriv.start, deriv.end, deriv.formula, derivStream.estimatedSize());
 
     return gapFromMax > threshold;
@@ -463,7 +463,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       double oldScore = rootDeriv.score;
       rootDeriv.computeScore(params);
       if (parser.verbose(3))
-        LogController.logs("ReinforcementParser.rerankRootDerivations: deriv=%s, old=%s, new=%s", rootDeriv, oldScore, rootDeriv.score);
+        NLULoggerController.logs("ReinforcementParser.rerankRootDerivations: deriv=%s, old=%s, new=%s", rootDeriv, oldScore, rootDeriv.score);
     }
     Derivation.sortByScore(predDerivations);
   }
@@ -499,7 +499,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     double[] qDist = sampler.getDerivDistribution(predDerivations); //uniform over correct things when \beta is high
     double[] piDist = ReinforcementUtils.expNormalize(predDerivations);
     // compute E_q(R(d))
-    LogController.begin_track("Computing gradient");
+    NLULoggerController.begin_track("Computing gradient");
     double rewardExpectation = computeExpectedReward(predDerivations, qDist);
 
     // compute E_q(\phi(d) R(d)) and E_pi(\phi(d))
@@ -524,11 +524,11 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     for (String key : sampleCounts.keySet()) {
       double value = sampleCounts.get(key);
       if (parser.verbose(3))
-        LogController.logs("feature=%s, value=%s", key, value);
+        NLULoggerController.logs("feature=%s, value=%s", key, value);
       sum += value * value;
     }
-    LogController.logs("L2 norm: %s", Math.sqrt(sum));
-    LogController.end_track();
+    NLULoggerController.logs("L2 norm: %s", Math.sqrt(sum));
+    NLULoggerController.end_track();
   }
 
   private void createSampler(ReinforcementParserState oracleState) {
@@ -576,7 +576,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       sampledDerivation.compatibility = parser.valueEvaluator.getCompatibility(ex.targetValue, sampledDerivation.value);
     if (Parser.opts.partialReward ? (sampledDerivation.compatibility > 0) : (sampledDerivation.compatibility == 1)) {
       if (parser.verbose(2))
-        LogController.logs("Top-level %s: reward = %s", numItemsSampled, sampledDerivation.compatibility);
+        NLULoggerController.logs("Top-level %s: reward = %s", numItemsSampled, sampledDerivation.compatibility);
       // put in position 0 the derivation with best compatibility
       correctDerivations.add(sampledDerivation);
       if (correctDerivations.get(0).compatibility < sampledDerivation.compatibility) {
@@ -589,14 +589,14 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
   }
 
   public void setEvaluation() {
-    LogController.begin_track_printAll("ReinforcementParserParserState.setEvaluation");
+    NLULoggerController.begin_track_printAll("ReinforcementParserParserState.setEvaluation");
     super.setEvaluation();
 
     if (coarseParserState != null)
       evaluation.add("coarseParseTime", coarseParserState.getCoarseParseTime());
     if (firstCorrectItem != -1)
       evaluation.add("firstCorrectItem", firstCorrectItem);
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   // Defines how to sample the next state
@@ -612,7 +612,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
         PrioritizedDerivationStream pds = agenda.get(i);
         pds.addProb(modelProbs[i]);
         if (parser.verbose(3))
-          LogController.logs("updateProbSum(): deriv=%s, probSum=%s", pds.derivStream.peek(), pds.probSum);
+          NLULoggerController.logs("updateProbSum(): deriv=%s, probSum=%s", pds.derivStream.peek(), pds.probSum);
       }
     }
   }
@@ -684,16 +684,16 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
         Derivation oracleDeriv = oracleState.correctDerivations.get(0);
         this.firstCorrectDerivNumber = oracleDeriv.creationIndex;
 
-        LogController.logs("OracleSampler: deriv=%s, comp=%s", oracleDeriv, oracleDeriv.compatibility);
+        NLULoggerController.logs("OracleSampler: deriv=%s, comp=%s", oracleDeriv, oracleDeriv.compatibility);
         populateCorrectDerivations(oracleDeriv);
 
         if (parser.verbose(2)) {
-          LogController.begin_track("OracleSampler: necessary infos:");
-          for (DerivInfo necessaryInfo : necessaryDerivInfos) LogController.log(necessaryInfo);
-          LogController.end_track();
-          LogController.begin_track("OracleSampler: oracle infos:");
-          for (DerivInfo oracleInfo : oracleDerivInfos) LogController.log(oracleInfo);
-          LogController.end_track();
+          NLULoggerController.begin_track("OracleSampler: necessary infos:");
+          for (DerivInfo necessaryInfo : necessaryDerivInfos) NLULoggerController.log(necessaryInfo);
+          NLULoggerController.end_track();
+          NLULoggerController.begin_track("OracleSampler: oracle infos:");
+          for (DerivInfo oracleInfo : oracleDerivInfos) NLULoggerController.log(oracleInfo);
+          NLULoggerController.end_track();
         }
       }
     }
@@ -701,14 +701,14 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     private void populateCorrectDerivations(Derivation oracleDeriv) {
       // add derivation info and also all upstream derivations
       if (parser.verbose(4))
-        LogController.logs("populateCorrectDerivations(): oracle deriv: %s", oracleDeriv);
+        NLULoggerController.logs("populateCorrectDerivations(): oracle deriv: %s", oracleDeriv);
 
       Pair<ArrayList<Derivation>, Integer> listAndIndex = this.backPointers.get(oracleDeriv.creationIndex);
       if (listAndIndex != null) {
         for (int i = listAndIndex.getSecond() - 1; i >= 0; i--) {
           Derivation deriv = listAndIndex.getFirst().get(i);
           if (parser.verbose(4))
-            LogController.logs("populateCorrectDerivations(): necessary deriv: %s", deriv);
+            NLULoggerController.logs("populateCorrectDerivations(): necessary deriv: %s", deriv);
           DerivInfo derivInfo = new DerivInfo(deriv.cat, deriv.start, deriv.end, deriv.formula, deriv.rule);
           if (!necessaryDerivInfos.contains(derivInfo))
             necessaryDerivInfos.add(derivInfo);
@@ -737,7 +737,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       int index = (int) (deriv.creationIndex - firstCorrectDerivNumber);
       if (index < 0) throw new RuntimeException("Negative index - correct index larger than deriv number");
       if (index >= 200000) {
-        LogController.warnings("isNecessaryDeriv(): index larger than 200000: %s", index);
+        NLULoggerController.warnings("isNecessaryDeriv(): index larger than 200000: %s", index);
         return necessaryDerivInfos.contains(new DerivInfo(deriv.cat, deriv.start, deriv.end, deriv.formula, deriv.rule));
       }
       if (necessaryDerivsCache[index] == NecessaryDeriv.UNNECESSARY_DERIV)
@@ -759,7 +759,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     public MultiplicativeProposalSampler(ReinforcementParserState oracleState) {
       oracleInfo = new OracleInfo(oracleState);
       bonus = ReinforcementParser.opts.multiplicativeBonus;
-      LogController.logs("Bonus=%s", bonus);
+      NLULoggerController.logs("Bonus=%s", bonus);
     }
 
     // We assume that oracle stuff has been unrolled
@@ -777,9 +777,9 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       if (parser.verbose(3)) {
         Derivation deriv = pds.derivStream.peek();
         if (oracleInfo.oracleDerivInfos.contains(new DerivInfo(deriv.cat, deriv.start, deriv.end, deriv.formula, deriv.rule)))
-          LogController.logs("MultiplicativeProposalSampler.sample(): Sampled from correct!, prob=%s", prob);
+          NLULoggerController.logs("MultiplicativeProposalSampler.sample(): Sampled from correct!, prob=%s", prob);
         else
-          LogController.logs("MultiplicativeProposalSampler.sample(): Sampled from incorrect!, prob=%s", prob);
+          NLULoggerController.logs("MultiplicativeProposalSampler.sample(): Sampled from incorrect!, prob=%s", prob);
       }
       boolean returnProb = true;
 
@@ -792,7 +792,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
         else returnProb = false;
 
         if (parser.verbose(3)) {
-          LogController.logs("Updating gradient=%s", returnProb);
+          NLULoggerController.logs("Updating gradient=%s", returnProb);
         }
       } else {
         if (computeExpectedCounts) // compute probability sum before sampling for gradient computation (easier before sampling)
@@ -810,7 +810,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
     public void unroll() {
 
       if (parser.verbose(3))
-        LogController.begin_track("MultiplicativeBonusSampler.unroll()");
+        NLULoggerController.begin_track("MultiplicativeBonusSampler.unroll()");
 
       List<Pair<DerivationStream, Double>> derivsToAdd = new ArrayList<>();
       List<Integer> indicesToRemove = new ArrayList<>();
@@ -824,7 +824,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
           DerivationStream newDerivStream = SingleDerivationStream.constant(nextDeriv);
           if (parser.verbose(3) && newDerivStream.hasNext()) {
             Derivation deriv  = newDerivStream.peek();
-            LogController.logs("MultiplicativeSampler.unroll(): add necessary deriv=%s(%s,%s) [%s] score=%s, |stream|=%s, creationIndex=%s",
+            NLULoggerController.logs("MultiplicativeSampler.unroll(): add necessary deriv=%s(%s,%s) [%s] score=%s, |stream|=%s, creationIndex=%s",
                     deriv.cat, deriv.start, deriv.end, deriv.formula, deriv.score, pds.derivStream.estimatedSize(), deriv.creationIndex);
           }
           derivsToAdd.add(Pair.newPair(newDerivStream, pds.probSum));
@@ -843,7 +843,7 @@ final class ReinforcementParserState extends AbstractReinforcementParserState {
       for (Pair<DerivationStream, Double> pair: derivsToAdd)
         addToAgenda(pair.getFirst(), pair.getSecond());
       if (parser.verbose(3))
-        LogController.end_track();
+        NLULoggerController.end_track();
     }
 
     private double[] getUnnormalizedAgendaDistribution() {

@@ -2,9 +2,8 @@ package edu.stanford.nlp.sempre.test;
 
 import edu.stanford.nlp.sempre.*;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import org.testng.annotations.Test;
-
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.util.*;
 import java.nio.file.*;
@@ -29,9 +28,9 @@ public class GrammarValidityTest {
           try {
             if (filePath.toString().toLowerCase().endsWith(".grammar")) {
               Grammar test = new Grammar();
-              LogController.logs("Reading grammar file: %s", filePath.toString());
+              NLULoggerController.logs("Reading grammar file: %s", filePath.toString());
               test.read(filePath.toString());
-              LogController.logs("Finished reading", filePath.toString());
+              NLULoggerController.logs("Finished reading", filePath.toString());
               successes.add(filePath.toString());
             }
           }
@@ -40,18 +39,18 @@ public class GrammarValidityTest {
           }
         });
       }
-      LogController.begin_track("Following grammar tests passed:");
+      NLULoggerController.begin_track("Following grammar tests passed:");
       for (String path : successes)
-        LogController.logs("%s", path);
-      LogController.end_track();
-      LogController.begin_track("Following grammar tests failed:");
+        NLULoggerController.logs("%s", path);
+      NLULoggerController.end_track();
+      NLULoggerController.begin_track("Following grammar tests failed:");
       for (String path : failures)
-        LogController.logs("%s", path);
-      LogController.end_track();
+        NLULoggerController.logs("%s", path);
+      NLULoggerController.end_track();
       assertEquals(0, failures.size());
     }
     catch (Exception ex) {
-      LogController.logs(ex.toString());
+      NLULoggerController.logs(ex.toString());
     }
   }
 }

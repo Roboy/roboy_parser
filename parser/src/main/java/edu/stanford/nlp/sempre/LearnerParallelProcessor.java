@@ -2,11 +2,10 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.Evaluation;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Parallelizer;
-import fig.basic.StopWatchSet;
 import fig.exec.Execution;
 
 /**
@@ -34,7 +33,7 @@ public class LearnerParallelProcessor implements Parallelizer.Processor<Example>
 
   @Override
   public void process(Example ex, int i, int n) {
-    LogController.begin_track_printAll(
+    NLULoggerController.begin_track_printAll(
         "%s: example %s/%s: %s", prefix, i, n, ex.id);
     ex.log();
     Execution.putOutput("example", i);
@@ -49,27 +48,27 @@ public class LearnerParallelProcessor implements Parallelizer.Processor<Example>
 
       // Gathered enough examples, update parameters
       StopWatchSetController.begin("Learner.updateWeights");
-      LogController.begin_track("Updating learner weights");
+      NLULoggerController.begin_track("Updating learner weights");
       if (Learner.opts.verbose >= 2)
         SempreUtils.logMap(counts, "gradient");
       double sum = 0;
       for (double v : counts.values()) sum += v * v;
-      LogController.logs("L2 norm: %s", Math.sqrt(sum));
+      NLULoggerController.logs("L2 norm: %s", Math.sqrt(sum));
       synchronized (params) {
         params.update(counts);
       }
       counts.clear();
-      LogController.end_track();
+      NLULoggerController.end_track();
       StopWatchSetController.end();
     }
 
-    LogController.logs("Current: %s", ex.evaluation.summary());
+    NLULoggerController.logs("Current: %s", ex.evaluation.summary());
     synchronized (evaluation) {
       evaluation.add(ex.evaluation);
-      LogController.logs("Cumulative(%s): %s", prefix, evaluation.summary());
+      NLULoggerController.logs("Cumulative(%s): %s", prefix, evaluation.summary());
     }
 
-    LogController.end_track();
+    NLULoggerController.end_track();
 
     // To save memory
     ex.clean();

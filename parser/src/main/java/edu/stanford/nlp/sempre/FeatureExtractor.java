@@ -3,7 +3,7 @@ package edu.stanford.nlp.sempre;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
 import java.util.*;
 

@@ -1,6 +1,7 @@
 package edu.stanford.nlp.sempre.cache;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +14,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 /**
  * Cache backed by a file.
  *
@@ -78,7 +78,7 @@ public class FileStringCache implements StringCache, LruCallback<String, String>
       }
     }
 
-    LogController.logs("Using cache %s (%d entries)", path, cache.size());
+    NLULoggerController.logs("Using cache %s (%d entries)", path, cache.size());
 
     if (!readOnly && opts.appendMode)
       out = IOUtils.openOutAppendHard(path);
@@ -96,15 +96,15 @@ public class FileStringCache implements StringCache, LruCallback<String, String>
       return;
 
     if (opts.verbose >= 2) {
-      LogController.begin_track("FileStringCache FLUSH (dump mode)");
-      LogController.logs("Size: %d", size());
+      NLULoggerController.begin_track("FileStringCache FLUSH (dump mode)");
+      NLULoggerController.logs("Size: %d", size());
       if (cache instanceof LruMap)
-        LogController.logs("Memory: %d", ((LruMap<String, String>) cache).getBytes());
-      LogController.logs("Touches: %d", numTouches);
-      LogController.logs("Evictions: %d", numEvictions);
-      LogController.logs("Evicted keys: %s", keyStats);
-      LogController.logs("Evicted values: %s", valStats);
-      LogController.end_track();
+        NLULoggerController.logs("Memory: %d", ((LruMap<String, String>) cache).getBytes());
+      NLULoggerController.logs("Touches: %d", numTouches);
+      NLULoggerController.logs("Evictions: %d", numEvictions);
+      NLULoggerController.logs("Evicted keys: %s", keyStats);
+      NLULoggerController.logs("Evicted values: %s", valStats);
+      NLULoggerController.end_track();
     }
 
     PrintWriter dumpOut = IOUtils.openOutHard(this.path + ".tmp");
@@ -155,16 +155,16 @@ public class FileStringCache implements StringCache, LruCallback<String, String>
   }
 
   private void logTrack(String header, String key, String value) {
-    LogController.begin_track(header);
-    LogController.logs("Key size: %d (%d bytes)", key.length(), MemUsage.getBytes(key));
-    LogController.logs("Val size: %d (%d bytes)", value.length(), MemUsage.getBytes(value));
+    NLULoggerController.begin_track(header);
+    NLULoggerController.logs("Key size: %d (%d bytes)", key.length(), MemUsage.getBytes(key));
+    NLULoggerController.logs("Val size: %d (%d bytes)", value.length(), MemUsage.getBytes(value));
     if (cache instanceof LruMap) {
-      LogController.logs("Cache size: %d entries (%d bytes of %d)",
+      NLULoggerController.logs("Cache size: %d entries (%d bytes of %d)",
           cache.size(),
           ((LruMap) cache).getBytes(),
           ((LruMap) cache).getCapacity());
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   // For tests

@@ -4,8 +4,8 @@ import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.cache.StringCache;
 import edu.stanford.nlp.sempre.cache.StringCacheUtils;
 import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -129,7 +129,7 @@ public class SparqlExecutor extends Executor {
     } catch (SocketTimeoutException e) {
       return new ServerResponse(ErrorValue.timeout);
     } catch (IOException e) {
-      LogController.errors("Server exception: %s", e);
+      NLULoggerController.errors("Server exception: %s", e);
       // Sometimes the SPARQL server throws a 408 to signify a server timeout.
       if (e.toString().contains("HTTP response code: 408"))
         return new ServerResponse(ErrorValue.server408);
@@ -163,7 +163,7 @@ public class SparqlExecutor extends Executor {
   //  - XML
   //  - Whether to print out details (coincides with whether this query was cached).
   public ServerResponse runQueryToGetXml(String queryStr, Formula formula) {
-    if (opts.verbose >= 3) LogController.logs("SparqlExecutor.execute: %s", queryStr);
+    if (opts.verbose >= 3) NLULoggerController.logs("SparqlExecutor.execute: %s", queryStr);
     ServerResponse response = null;
 
     // Note: only cache for concrete queries.
@@ -188,8 +188,8 @@ public class SparqlExecutor extends Executor {
     if (response == null) {
       // Note: begin_track without end_track
       if (opts.verbose >= 1) {
-        LogController.begin_track("SparqlExecutor.execute: %s", formula);
-        if (opts.verbose >= 2) LogController.logs("%s", queryStr);
+        NLULoggerController.begin_track("SparqlExecutor.execute: %s", formula);
+        if (opts.verbose >= 2) NLULoggerController.logs("%s", queryStr);
       }
 
       // Make actual request
@@ -219,7 +219,7 @@ public class SparqlExecutor extends Executor {
     } catch (IOException e) {
       throw new RuntimeException(e);
     } catch (SAXException e) {
-      LogController.errors("XML: %s", xml);
+      NLULoggerController.errors("XML: %s", xml);
       // throw new RuntimeException(e);
       return null;
     } catch (ParserConfigurationException e) {
@@ -236,7 +236,7 @@ public class SparqlExecutor extends Executor {
   }
   public synchronized Response execute(Formula formula, int offset, int maxResults) {
     if (opts.verbose >= 3)
-      LogController.logs("SparqlExecutor.execute: %s", formula);
+      NLULoggerController.logs("SparqlExecutor.execute: %s", formula);
     String prefix = "exec-";
 
     Evaluation stats = new EvaluationController();
@@ -262,17 +262,17 @@ public class SparqlExecutor extends Executor {
       if (serverResponse.error != null) {
         MapUtils.incr(queryStats.errors, serverResponse.error.type, 1);
         if (serverResponse.beginTrack && opts.verbose >= 1)
-          LogController.logs("Error: %s", serverResponse.error);
+          NLULoggerController.logs("Error: %s", serverResponse.error);
       }
       if (serverResponse.beginTrack && opts.verbose >= 2) {
-        LogController.logs("time: %s", queryStats.timeFig);
-        LogController.logs("errors: %s", queryStats.errors);
+        NLULoggerController.logs("time: %s", queryStats.timeFig);
+        NLULoggerController.logs("errors: %s", queryStats.errors);
       }
     }
 
     // If error, then return out
     if (serverResponse.error != null) {
-      if (serverResponse.beginTrack && opts.verbose >= 1) LogController.end_track();
+      if (serverResponse.beginTrack && opts.verbose >= 1) NLULoggerController.end_track();
       if (!serverResponse.cached)
         stats.add(prefix + "error", true);
       return new Response(serverResponse.error, stats);
@@ -286,7 +286,7 @@ public class SparqlExecutor extends Executor {
     if (results == null) return new Response(ErrorValue.badFormat, stats);
     Value value = new ValuesExtractor(serverResponse.beginTrack, formula, converter).extract(results);
 
-    if (serverResponse.beginTrack && opts.verbose >= 1) LogController.end_track();
+    if (serverResponse.beginTrack && opts.verbose >= 1) NLULoggerController.end_track();
 
     return new Response(value, stats);
   }
@@ -399,7 +399,7 @@ public class SparqlExecutor extends Executor {
     }
 
     private void addSelectVar(Box box, SparqlSelect select, SparqlBlock block, VariableFormula var, boolean isAuxiliary) {
-      if (opts.verbose >= 5) LogController.logs("addSelectVar: %s : %s | %s", var, box.asValuesMap.get(var), box.asValuesMap);
+      if (opts.verbose >= 5) NLULoggerController.logs("addSelectVar: %s : %s | %s", var, box.asValuesMap.get(var), box.asValuesMap);
 
       // Check if alrady exists; if so, don't add it again
       for (SparqlSelect.Var oldVar : select.selectVars)
@@ -454,7 +454,7 @@ public class SparqlExecutor extends Executor {
 
         if (descriptionsMap.get(var) == null) {
           descriptionsMap.put(var, fbInfo.getName(fbInfo.getArg1Type(property)));
-          if (opts.verbose >= 3) LogController.logs("description arg1=%s => %s => %s", var, fbInfo.getArg1Type(property), descriptionsMap.get(var));
+          if (opts.verbose >= 3) NLULoggerController.logs("description arg1=%s => %s => %s", var, fbInfo.getArg1Type(property), descriptionsMap.get(var));
         }
       }
 
@@ -463,7 +463,7 @@ public class SparqlExecutor extends Executor {
         VariableFormula var = (VariableFormula) arg2;
         updateUnit(var, fbInfo.getUnit2(property));
         descriptionsMap.put(var, fbInfo.getName(property));
-        if (opts.verbose >= 3) LogController.logs("description arg2=%s => %s => %s", var, property, descriptionsMap.get(var));
+        if (opts.verbose >= 3) NLULoggerController.logs("description arg2=%s => %s => %s", var, property, descriptionsMap.get(var));
       }
     }
 
@@ -476,7 +476,7 @@ public class SparqlExecutor extends Executor {
 
     // Update the unit of |var| if necessary.
     void updateUnit(VariableFormula var, String unit) {
-      if (opts.verbose >= 5) LogController.logs("updateUnit: %s : %s", var, unit);
+      if (opts.verbose >= 5) NLULoggerController.logs("updateUnit: %s : %s", var, unit);
       if (unit == null) return;
       String oldUnit = unitsMap.get(var);
       if (oldUnit == null) { unitsMap.put(var, unit); return; }
@@ -488,11 +488,11 @@ public class SparqlExecutor extends Executor {
       if (oldUnit.equals(FreebaseInfo.CVT)) return;  // Keep CVT
 
       if (!unit.equals(oldUnit))
-        LogController.errors("Unit mis-match for %s: old is '%s', new is '%s'", var, oldUnit, unit);
+        NLULoggerController.errors("Unit mis-match for %s: old is '%s', new is '%s'", var, oldUnit, unit);
     }
 
     void updateAsValues(Box box, VariableFormula var, String asValue) {
-      if (opts.verbose >= 5) LogController.logs("updateAsValues: %s : %s", var, asValue);
+      if (opts.verbose >= 5) NLULoggerController.logs("updateAsValues: %s : %s", var, asValue);
       box.asValuesMap.put(var, asValue);
     }
 
@@ -512,7 +512,7 @@ public class SparqlExecutor extends Executor {
     // - env: mapping from lambda-DCS variables (e.g., ?city) to SPARQL variables (?x13)
     // - asValuesMap: additional constraints
     private SparqlBlock convert(Formula rawFormula, Ref<PrimitiveFormula> head, Ref<PrimitiveFormula> modifier, Box box) {
-      if (opts.verbose >= 5) LogController.begin_track("convert %s: head = %s, modifier = %s, env = %s", rawFormula, head, modifier, box.env);
+      if (opts.verbose >= 5) NLULoggerController.begin_track("convert %s: head = %s, modifier = %s, env = %s", rawFormula, head, modifier, box.env);
 
       // Check binary/unary compatibility
       boolean isNameFormula = (rawFormula instanceof ValueFormula) && (((ValueFormula) rawFormula).value instanceof NameValue);  // Either binary or unary
@@ -660,7 +660,7 @@ public class SparqlExecutor extends Executor {
           AggregateFormula.Mode mode = isMax ? AggregateFormula.Mode.max : AggregateFormula.Mode.min;
           Formula best = new MarkFormula("degree", new AggregateFormula(mode, new JoinFormula(new ReverseFormula(formula.relation), formula.head)));
           Formula transformed = new MergeFormula(MergeFormula.Mode.and, formula.head, new JoinFormula(formula.relation, best));
-          if (opts.verbose >= 5) LogController.logs("TRANSFORMED: %s", transformed);
+          if (opts.verbose >= 5) NLULoggerController.logs("TRANSFORMED: %s", transformed);
           block.add(convert(transformed, head, null, box));
         }
       } else if (rawFormula instanceof AggregateFormula) {
@@ -729,8 +729,8 @@ public class SparqlExecutor extends Executor {
         throw new RuntimeException("Unhandled formula: " + rawFormula);
       }
 
-      if (opts.verbose >= 5) LogController.logs("return: head = %s, modifier = %s, env = %s", head, modifier, box.env);
-      if (opts.verbose >= 5) LogController.end_track();
+      if (opts.verbose >= 5) NLULoggerController.logs("return: head = %s, modifier = %s, env = %s", head, modifier, box.env);
+      if (opts.verbose >= 5) NLULoggerController.end_track();
 
       return block;
     }
@@ -780,7 +780,7 @@ public class SparqlExecutor extends Executor {
 
     private String applyOpVar(String func, PrimitiveFormula var1, PrimitiveFormula var2) {
       // Special function for taking the difference between dates.
-      LogController.logs("%s %s", var1, var2);
+      NLULoggerController.logs("%s %s", var1, var2);
       if (func.equals("-") && (var1 instanceof VariableFormula) && FreebaseInfo.DATE.equals(unitsMap.get(var1)))
         return "bif:datediff(\"year\"," + SparqlUtils.dateTimeStr(var2) + "," + SparqlUtils.dateTimeStr(var1) + ")";
       else if (func.equals("+") && (var1 instanceof VariableFormula) && FreebaseInfo.DATE.equals(unitsMap.get(var1)))
@@ -823,8 +823,8 @@ public class SparqlExecutor extends Executor {
     Value extract(NodeList results) {
       // For each result (row in a table)...
       if (beginTrack && opts.verbose >= 2) {
-        LogController.begin_track("%d results", results.getLength());
-        if (opts.returnTable) LogController.logs("Header: %s", header);
+        NLULoggerController.begin_track("%d results", results.getLength());
+        if (opts.returnTable) NLULoggerController.logs("Header: %s", header);
       }
 
       List<Value> firstValues = new ArrayList<Value>();  // If not returning a table
@@ -836,9 +836,9 @@ public class SparqlExecutor extends Executor {
           rows.add(row);
         else
           firstValues.add(row.get(0));
-        if (beginTrack && opts.verbose >= 2) LogController.logs("Row %d: %s", i, row);
+        if (beginTrack && opts.verbose >= 2) NLULoggerController.logs("Row %d: %s", i, row);
       }
-      if (beginTrack && opts.verbose >= 2) LogController.end_track();
+      if (beginTrack && opts.verbose >= 2) NLULoggerController.end_track();
 
       if (opts.returnTable)
         return new TableValue(header, rows);
@@ -896,7 +896,7 @@ public class SparqlExecutor extends Executor {
         } else if (unit.equals(FreebaseInfo.ENTITY)) {
           value = new NameValue(id, description);
         } else if (unit.equals(FreebaseInfo.CVT)) {
-          LogController.warnings("%s returns CVT, probably not intended", formula);
+          NLULoggerController.warnings("%s returns CVT, probably not intended", formula);
           value = new NameValue(id, description);
         } else {
           value = new NumberValue("NAN".equals(description) || description == null ? Double.NaN : Double.parseDouble(description), unit);
@@ -935,23 +935,23 @@ public class SparqlExecutor extends Executor {
     parser.registerAll(new Object[]{"SparqlExecutor", SparqlExecutor.opts, "FreebaseInfo", FreebaseInfo.opts, "main", mainOpts});
     parser.parse(args);
 
-    LogController.begin_track("main()");
+    NLULoggerController.begin_track("main()");
     SparqlExecutor executor = new SparqlExecutor();
 
     if (mainOpts.formula != null) {
-      LogController.logs("%s", executor.execute(Formulas.fromLispTree(LispTree.proto.parseFromString(mainOpts.formula)), null).value);
+      NLULoggerController.logs("%s", executor.execute(Formulas.fromLispTree(LispTree.proto.parseFromString(mainOpts.formula)), null).value);
     }
 
     if (mainOpts.formulasPath != null) {
       Iterator<LispTree> trees = LispTree.proto.parseFromFile(mainOpts.formulasPath);
       while (trees.hasNext()) {
-        LogController.logs("%s", executor.execute(Formulas.fromLispTree(trees.next()), null).value);
+        NLULoggerController.logs("%s", executor.execute(Formulas.fromLispTree(trees.next()), null).value);
       }
     }
 
     if (mainOpts.sparql != null)
-      LogController.logs("%s", executor.makeRequest(mainOpts.sparql, opts.endpointUrl).xml);
+      NLULoggerController.logs("%s", executor.makeRequest(mainOpts.sparql, opts.endpointUrl).xml);
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 }

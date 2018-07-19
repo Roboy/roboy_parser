@@ -3,8 +3,8 @@ package edu.stanford.nlp.sempre.freebase;
 import edu.stanford.nlp.sempre.*;
 
 import com.google.common.base.Function;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.exec.Execution;
 
@@ -36,10 +36,10 @@ public class ExecuteExamples implements Runnable {
       cache.put(formula, response = executor.execute(formula, null));
     if (!(response.value instanceof ListValue) ||
         ((ListValue) response.value).values.size() == 0) {
-      LogController.logs("BAD QUERY: %s => %s", formula, response.value);
+      NLULoggerController.logs("BAD QUERY: %s => %s", formula, response.value);
       return false;
     } else {
-      LogController.logs("GOOD QUERY: %s => %s", formula, response.value);
+      NLULoggerController.logs("GOOD QUERY: %s => %s", formula, response.value);
       return true;
     }
   }

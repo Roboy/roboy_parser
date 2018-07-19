@@ -5,7 +5,7 @@ import edu.stanford.nlp.sempre.ContextValue;
 import edu.stanford.nlp.sempre.roboy.UnderspecifiedInfo;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
 import edu.stanford.nlp.sempre.roboy.lexicons.word2vec.Word2vec;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 
 import java.util.*;
 
@@ -76,7 +76,7 @@ public class ContextScore extends ScoringFunction {
             if (Double.isNaN(score))
                 score = 0.0;
             if (ConfigManager.DEBUG > 4)
-                LogController.logs("Context: %s -> %f", candidate.get("URI"), score);
+                NLULoggerController.logs("Context: %s -> %f", candidate.get("URI"), score);
             result.candidatesScores.add(score*this.weight);
         }
         return result;

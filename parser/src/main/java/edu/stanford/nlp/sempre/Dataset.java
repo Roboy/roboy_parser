@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import fig.exec.Execution;
 import fig.prob.SampleUtils;
 
@@ -132,7 +132,7 @@ public class Dataset {
   }
 
   private void readFromGroupInfos(List<GroupInfo> groupInfos) {
-    LogController.begin_track_printAll("Dataset.read");
+    NLULoggerController.begin_track_printAll("Dataset.read");
 
     for (GroupInfo groupInfo : groupInfos) {
       int maxExamples = getMaxExamplesForGroup(groupInfo.group);
@@ -144,7 +144,7 @@ public class Dataset {
     if (opts.splitDevFromTrain) splitDevFromTrain();
     collectStats();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   private void splitDevFromTrain() {
@@ -196,7 +196,7 @@ public class Dataset {
       // Skip example if too long
       if (ex.numTokens() > opts.maxTokens) continue;
 
-      LogController.logs("Example %s (%d): %s => %s",
+      NLULoggerController.logs("Example %s (%d): %s => %s",
           ex.id, examples.size(), ex.getTokens(), ex.targetValue);
 
       examples.add(ex);
@@ -206,7 +206,7 @@ public class Dataset {
   }
 
   private void readLispTreeFromPathPairs(List<Pair<String, String>> pathPairs) {
-    LogController.begin_track_printAll("Dataset.read");
+    NLULoggerController.begin_track_printAll("Dataset.read");
     for (Pair<String, String> pathPair : pathPairs) {
       String group = pathPair.getFirst();
       String path = pathPair.getSecond();
@@ -217,12 +217,12 @@ public class Dataset {
       readLispTreeHelper(path, maxExamples, examples);
     }
     if (opts.splitDevFromTrain) splitDevFromTrain();
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   private void readLispTreeHelper(String path, int maxExamples, List<Example> examples) {
     if (examples.size() >= maxExamples) return;
-    LogController.begin_track("Reading %s", path);
+    NLULoggerController.begin_track("Reading %s", path);
 
     Iterator<LispTree> trees = LispTree.proto.parseFromFile(path);
     int n = 0;
@@ -241,22 +241,22 @@ public class Dataset {
       // Skip example if too long
       if (ex.numTokens() > opts.maxTokens) continue;
 
-      LogController.logs("Example %s (%d): %s => %s => %s", ex.id, examples.size(), ex.getTokens(), ex.targetValue, ex.targetFormula);
+      NLULoggerController.logs("Example %s (%d): %s => %s => %s", ex.id, examples.size(), ex.getTokens(), ex.targetValue, ex.targetFormula);
 
       examples.add(ex);
       numTokensFig.add(ex.numTokens());
       for (String token : ex.getTokens()) tokenTypes.add(token);
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   private void collectStats() {
-    LogController.begin_track_printAll("Dataset stats");
+    NLULoggerController.begin_track_printAll("Dataset stats");
     Execution.putLogRec("numTokenTypes", tokenTypes.size());
     Execution.putLogRec("numTokensPerExample", numTokensFig);
     for (Map.Entry<String, List<Example>> e : allExamples.entrySet())
       Execution.putLogRec("numExamples." + e.getKey(), e.getValue().size());
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public static int getMaxExamplesForGroup(String group) {

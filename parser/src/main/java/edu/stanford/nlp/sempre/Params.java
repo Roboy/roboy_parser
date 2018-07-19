@@ -3,8 +3,8 @@ package edu.stanford.nlp.sempre;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class Params {
 
   // Read parameters from |path|.
   public void read(String path) {
-    LogController.begin_track("Reading parameters from %s", path);
+    NLULoggerController.begin_track("Reading parameters from %s", path);
     try {
       BufferedReader in = IOUtils.openIn(path);
       String line;
@@ -90,13 +90,13 @@ public class Params {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    LogController.logs("Read %s weights", weights.size());
-    LogController.end_track();
+    NLULoggerController.logs("Read %s weights", weights.size());
+    NLULoggerController.end_track();
   }
 
   // Read parameters from |path|.
   public void read(String path, String prefix) {
-    LogController.begin_track("Reading parameters from %s", path);
+    NLULoggerController.begin_track("Reading parameters from %s", path);
     try {
       BufferedReader in = IOUtils.openIn(path);
       String line;
@@ -109,8 +109,8 @@ public class Params {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    LogController.logs("Read %s weights", weights.size());
-    LogController.end_track();
+    NLULoggerController.logs("Read %s weights", weights.size());
+    NLULoggerController.end_track();
   }
 
   // Update weights by adding |gradient| (modified appropriately with step size).
@@ -132,7 +132,7 @@ public class Params {
         MapUtils.set(weights, f, stepSize * sumGradients.get(f));
       } else {
         if (stepSize * g == Double.POSITIVE_INFINITY || stepSize * g == Double.NEGATIVE_INFINITY) {
-          LogController.logs("WEIRD FEATURE UPDATE: feature=%s, currentWeight=%s, stepSize=%s, gradient=%s", f, getWeight(f), stepSize, g);
+          NLULoggerController.logs("WEIRD FEATURE UPDATE: feature=%s, currentWeight=%s, stepSize=%s, gradient=%s", f, getWeight(f), stepSize, g);
           throw new RuntimeException("Gradient absolute value is too large or too small");
         }
         MapUtils.incr(weights, f, stepSize * g);
@@ -150,10 +150,10 @@ public class Params {
     }
     numUpdates++;
     if (l1Reg == L1Reg.LAZY && opts.lazyL1FullUpdateFreq > 0 && numUpdates % opts.lazyL1FullUpdateFreq == 0) {
-      LogController.begin_track("Fully apply L1 regularization.");
+      NLULoggerController.begin_track("Fully apply L1 regularization.");
       finalizeWeights();
       System.gc();
-      LogController.end_track();
+      NLULoggerController.end_track();
     }
   }
 
@@ -232,22 +232,22 @@ public class Params {
   }
 
   public void write(String path) {
-    LogController.begin_track("Params.write(%s)", path);
+    NLULoggerController.begin_track("Params.write(%s)", path);
     PrintWriter out = IOUtils.openOutHard(path);
     write(out);
     out.close();
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public void log() {
-    LogController.begin_track("Params");
+    NLULoggerController.begin_track("Params");
     List<Map.Entry<String, Double>> entries = Lists.newArrayList(weights.entrySet());
     Collections.sort(entries, new ValueComparator<String, Double>(true));
     for (Map.Entry<String, Double> entry : entries) {
       double value = entry.getValue();
-      LogController.logs("%s\t%s", entry.getKey(), value);
+      NLULoggerController.logs("%s\t%s", entry.getKey(), value);
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public synchronized void finalizeWeights() {

@@ -1,10 +1,10 @@
 package edu.stanford.nlp.sempre;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
 
 /**
@@ -28,7 +28,7 @@ public abstract class KnowledgeGraph {
           return (KnowledgeGraph) classObject.getDeclaredMethod("fromLispTree", LispTree.class).invoke(null, tree);
         } catch (InvocationTargetException e) {
           e.getCause().printStackTrace();
-          LogController.fail(e.getCause());
+          NLULoggerController.fail(e.getCause());
           throw new RuntimeException(e);
         } catch (IllegalAccessException | IllegalArgumentException |
             NoSuchMethodException | SecurityException | ClassNotFoundException e) {

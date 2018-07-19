@@ -5,7 +5,8 @@ import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.BinaryLexicalEntry;
 import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 import java.io.IOException;
@@ -180,7 +181,7 @@ public class LexiconFn extends SemanticFn {
       newDeriv.addLocalChoice("LexiconFn " + newDeriv.startEndString(ex.getTokens()) + " " + entry);
 
     if (opts.verbose >= 3) {
-      LogController.logs(
+      NLULoggerController.logs(
               "LexiconFn: %s [%s => %s ~ %s | %s]: popularity = %s, distance = %s, type = %s, source=%s",
               mode, word, entry.normalizedTextDesc, entry.fbDescriptions, newDeriv.formula,
               entry.getPopularity(), entry.getDistance(), newDeriv.type, entry.source);
@@ -190,7 +191,7 @@ public class LexiconFn extends SemanticFn {
 
   public DerivationStream call(Example ex, Callable c) {
 
-    if (opts.verbose >= 5) LogController.begin_track("LexicalFn.call: %s", c.childStringValue(0));
+    if (opts.verbose >= 5) NLULoggerController.begin_track("LexicalFn.call: %s", c.childStringValue(0));
 
     String query = c.childStringValue(0);
     DerivationStream res;
@@ -238,23 +239,23 @@ public class LexiconFn extends SemanticFn {
       throw new RuntimeException(e);
     }
 
-    if (opts.verbose >= 5) LogController.end_track();
+    if (opts.verbose >= 5) NLULoggerController.end_track();
     return res;
   }
 
   // if there was bridging then have a rule from tokens to binary
   @Override
   public void addFeedback(Example ex) {
-    LogController.begin_track("LexiconFn.addFeedback");
+    NLULoggerController.begin_track("LexiconFn.addFeedback");
     Set<Pair<String, Formula>> correctLexemeFormulaMatches = collectLexemeFormulaPairs(ex);
 
     for (Pair<String, Formula> pair: correctLexemeFormulaMatches) {
-      LogController.logs("LexiconFn.addFeedback: %s => %s", pair.getFirst(), pair.getSecond());
+      NLULoggerController.logs("LexiconFn.addFeedback: %s => %s", pair.getFirst(), pair.getSecond());
       // TODO(joberant): hack to get id
       MapUtils.addToSet(correctEntryToExampleIds, pair, Integer.parseInt(ex.id.substring(ex.id.lastIndexOf(':') + 1)));
       BinaryLexicon.getInstance().updateLexicon(pair, correctEntryToExampleIds.get(pair).size());
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   private static Set<Pair<String, Formula>> collectLexemeFormulaPairs(Example ex) {
@@ -293,10 +294,10 @@ public class LexiconFn extends SemanticFn {
 
   @Override
   public void sortOnFeedback(Params params) {
-    LogController.begin_track("Learner.sortLexiconOnFeedback");
+    NLULoggerController.begin_track("Learner.sortLexiconOnFeedback");
     BinaryLexicon.getInstance().sortLexiconByFeedback(params);
     UnaryLexicon.getInstance().sortLexiconByFeedback(params);
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   // todo - this method is grammar specific and that is bad
@@ -328,7 +329,7 @@ public class LexiconFn extends SemanticFn {
 
       if (!rightContext[0].equals(ex.lemmaToken(deriv.end + i))) {
         if (opts.verbose >= 4) {
-          LogController.logs(
+          NLULoggerController.logs(
                   "RIGHT CONTEXT MISMATCH: full lexeme=%s, normalized text=%s left context=%s, right context=%s example=%s, formula=%s",
                   bEntry.fullLexeme,
                   bEntry.normalizedTextDesc,
@@ -347,7 +348,7 @@ public class LexiconFn extends SemanticFn {
         break;
       if (!leftContext[leftContext.length - i - 1].equals(ex.lemmaToken(deriv.start - i - 1))) {
         if (opts.verbose >= 2) {
-          LogController.logs(
+          NLULoggerController.logs(
                   "LEFT CONTEXT MISMATCH: full lexeme=%s, normalized text=%s left context=%s, right context=%s example=%s, formula=%s",
                   bEntry.fullLexeme,
                   bEntry.normalizedTextDesc,

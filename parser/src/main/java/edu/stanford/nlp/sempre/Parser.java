@@ -2,8 +2,8 @@ package edu.stanford.nlp.sempre;
 
 import edu.stanford.nlp.sempre.roboy.ErrorRetrieval;
 import edu.stanford.nlp.sempre.roboy.utils.EvaluationController;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 import java.io.PrintWriter;
 import java.util.*;
@@ -116,7 +116,7 @@ public abstract class Parser {
     this.valueEvaluator = spec.valueEvaluator;
 
     computeCatUnaryRules();
-    LogController.logs("%s: %d catUnaryRules (sorted), %d nonCatUnaryRules (in trie)",
+    NLULoggerController.logs("%s: %d catUnaryRules (sorted), %d nonCatUnaryRules (in trie)",
         this.getClass().getSimpleName(), catUnaryRules.size(), grammar.rules.size() - catUnaryRules.size());
   }
 
@@ -188,10 +188,10 @@ public abstract class Parser {
     // Parse
     StopWatch watch = new StopWatch();
     watch.start();
-    LogController.begin_track_printAll("Parser.parse: parse");
+    NLULoggerController.begin_track_printAll("Parser.parse: parse");
     ParserState state = newParserState(params, ex, computeExpectedCounts);
     state.infer();
-    LogController.end_track();
+    NLULoggerController.end_track();
     watch.stop();
     state.parseTime = watch.getCurrTimeLong();
     state.setEvaluation();
@@ -231,7 +231,7 @@ public abstract class Parser {
     // Parse
     StopWatch watch = new StopWatch();
     watch.start();
-    LogController.begin_track_printAll("Parser.parse: parse");
+    NLULoggerController.begin_track_printAll("Parser.parse: parse");
     ParserState state = newParserState(params, ex, computeExpectedCounts);
     state.infer();
 
@@ -240,7 +240,7 @@ public abstract class Parser {
     error.postprocess();
 
     state.execute();
-    LogController.end_track();
+    NLULoggerController.end_track();
     watch.stop();
     state.parseTime = watch.getCurrTimeLong();
     state.setEvaluation();
@@ -270,7 +270,7 @@ public abstract class Parser {
 
     boolean printAllPredictions = opts.printAllPredictions;
     int numCandidates = predDerivations.size();
-    LogController.begin_track_printAll("Parser.setEvaluation: %d candidates", numCandidates);
+    NLULoggerController.begin_track_printAll("Parser.setEvaluation: %d candidates", numCandidates);
 
     // Each derivation has a compatibility score (in [0, 1]) as well as a model probability.
     // Terminology:
@@ -376,7 +376,7 @@ public abstract class Parser {
       if (compatibilities != null && compatibilities[i] == 1) {
         boolean print = printAllPredictions || (numPrintedSoFar < opts.maxPrintedTrue);
         if (print) {
-          LogController.logs(
+          NLULoggerController.logs(
               "True@%04d: %s [score=%s, prob=%s%s]", i, deriv.toString(),
               Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
           numPrintedSoFar++;
@@ -391,7 +391,7 @@ public abstract class Parser {
       if (compatibilities != null && compatibilities[i] > 0 && compatibilities[i] < 1) {
         boolean print = printAllPredictions || (numPrintedSoFar < opts.maxPrintedTrue);
         if (print) {
-          LogController.logs(
+          NLULoggerController.logs(
               "Part@%04d: %s [score=%s, prob=%s%s]", i, deriv.toString(),
               Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
           numPrintedSoFar++;
@@ -406,7 +406,7 @@ public abstract class Parser {
       // Either print all predictions or this prediction is worse by some amount.
       boolean print = printAllPredictions || ((probs[i] >= probs[0] / 2 || i < 10) && i < opts.maxPrintedPredictions);
       if (print) {
-        LogController.logs(
+        NLULoggerController.logs(
             "Pred@%04d: %s [score=%s, prob=%s%s]", i, deriv.toString(),
             Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
         // LogController.logs("Derivation tree: %s", deriv.toRecursiveString());
@@ -442,6 +442,6 @@ public abstract class Parser {
         evaluation.add(deriv.executorStats);
     }
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 }

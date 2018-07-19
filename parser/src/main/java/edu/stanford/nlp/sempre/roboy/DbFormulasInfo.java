@@ -5,7 +5,7 @@ import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
 import edu.stanford.nlp.sempre.*;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.MapUtils;
 
 import java.io.FileNotFoundException;
@@ -83,7 +83,7 @@ public final class DbFormulasInfo {
                         info.expectedType2, info.expectedType1, info.unitId, info.unitDesc, info.descriptions, info.popularity));
       }
     }
-    LogController.log("Adding reverse formulas: " + entriesToAdd.size());
+    NLULoggerController.log("Adding reverse formulas: " + entriesToAdd.size());
     for (BinaryFormulaInfo e : entriesToAdd) {
       binaryFormulaInfoMap.put(e.formula, e);
     }
@@ -99,16 +99,16 @@ public final class DbFormulasInfo {
 
   private void loadFormulaInfo() throws IOException {
 
-    LogController.begin_track("Loading formula info...");
-    LogController.log("Adding schema properties");
+    NLULoggerController.begin_track("Loading formula info...");
+    NLULoggerController.log("Adding schema properties");
     binaryFormulaInfoMap = databaseInfo.createBinaryFormulaInfoMap();
     unaryFormulaInfoMap = databaseInfo.createUnaryFormulaInfoMap();
-    LogController.log("Current number of binary formulas: " + binaryFormulaInfoMap.size());
-    LogController.log("Current number of unary formulas: " + unaryFormulaInfoMap.size());
+    NLULoggerController.log("Current number of binary formulas: " + binaryFormulaInfoMap.size());
+    NLULoggerController.log("Current number of unary formulas: " + unaryFormulaInfoMap.size());
 
-    LogController.log("Compuing reverse for schema formulas");
+    NLULoggerController.log("Compuing reverse for schema formulas");
     computeReverseFormulaInfo();
-    LogController.log("Current number of binary formulas: " + binaryFormulaInfoMap.size());
+    NLULoggerController.log("Current number of binary formulas: " + binaryFormulaInfoMap.size());
     for (BinaryFormulaInfo info : binaryFormulaInfoMap.values()) {
 
       MapUtils.addToList(atomicExtype2ToBinaryMap, info.expectedType2, info.formula);
@@ -117,13 +117,13 @@ public final class DbFormulasInfo {
       }
     }
 
-    LogController.log("Generate formulas through CVTs");
+    NLULoggerController.log("Generate formulas through CVTs");
     generateCvtFormulas(); // generate formulas for CVTs
-    LogController.log("Current number of binary formulas: " + binaryFormulaInfoMap.size());
+    NLULoggerController.log("Current number of binary formulas: " + binaryFormulaInfoMap.size());
     // we first sort by popularity
     Comparator<Formula> comparator = getPopularityComparator();
     sortType2ToBinaryMaps(comparator);
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   public void sortType2ToBinaryMaps(Comparator<Formula> comparator) {

@@ -7,9 +7,9 @@ import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
 import edu.stanford.nlp.sempre.roboy.error.*;
 import edu.stanford.nlp.sempre.roboy.lexicons.word2vec.Word2vec;
 import edu.stanford.nlp.sempre.roboy.score.*;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.sempre.roboy.utils.SparqlUtils;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -61,7 +61,7 @@ public class ErrorRetrieval {
             this.helpers.add(new Word2VecRetriever(this.vec));
         }
         catch(Exception e){
-            LogController.logs("Exception in Word2Vec: "+e.getMessage());
+            NLULoggerController.logs("Exception in Word2Vec: "+e.getMessage());
         }
 
         // Add scoring functions
@@ -171,12 +171,12 @@ public class ErrorRetrieval {
      */
     public List<UnderspecifiedInfo> createCandidates(List<UnderspecifiedInfo> termList){
         for (UnderspecifiedInfo term:termList) {
-            LogController.begin_track("Analyzing term: %s", term.term);
+            NLULoggerController.begin_track("Analyzing term: %s", term.term);
             for (KnowledgeRetriever helper : this.helpers)
             {
                 term.addCandidates(helper.analyze(term));
             }
-            LogController.end_track();
+            NLULoggerController.end_track();
         }
         return termList;
     }
@@ -188,12 +188,12 @@ public class ErrorRetrieval {
      */
     public List<UnderspecifiedInfo> createScores(List<UnderspecifiedInfo> termList){
         for (UnderspecifiedInfo term:termList) {
-            LogController.begin_track("Scoring term: %s", term.term);
+            NLULoggerController.begin_track("Scoring term: %s", term.term);
             for (ScoringFunction scorer : this.scorers)
             {
                 term.addScores(scorer.score(term, this.context));
             }
-            LogController.end_track();
+            NLULoggerController.end_track();
         }
         return termList;
     }
@@ -242,7 +242,7 @@ public class ErrorRetrieval {
     public List<Map.Entry<String,String>> formQuestion(String term, List<String> candidate) {
         List<Map.Entry<String,String>> result = new ArrayList<>();
         for (String c:candidate) {
-            LogController.logs(c);
+            NLULoggerController.logs(c);
             Type type = new TypeToken<Map<String, String>>(){}.getType();
             Map<String, String> c_map = this.gson.fromJson(c, type);
             String desc = sparqlUtil.returnDescr(c_map.get("URI"),dbpediaUrl);
@@ -304,7 +304,7 @@ public class ErrorRetrieval {
                 String entity = formula.substring(start, end).substring(formula.substring(start, end).indexOf("'") + 1);
                 String best = replacements.get(entity);
                 if (ConfigManager.DEBUG > 5)
-                    LogController.logs("Forming: %s - %s", best, full_type);
+                    NLULoggerController.logs("Forming: %s - %s", best, full_type);
                 if (this.underInfo.candidates.contains(entity)) {
                     for (int i = 0; i < this.underInfo.followUps.size(); i++) {
                         Map.Entry<String, String> entry = new java.util.AbstractMap.SimpleEntry<String, String>
@@ -334,7 +334,7 @@ public class ErrorRetrieval {
      * @param key             term to replace
      */
     public LispTree replaceEntity(LispTree new_formula, String replace, String key) {
-        LogController.logs("Old %s %s %s",replace,key,new_formula.toString());
+        NLULoggerController.logs("Old %s %s %s",replace,key,new_formula.toString());
         if (new_formula.toString().contains("has_type") && key.contains("type"))
             return Formula.fromString(new_formula.toString().replaceAll("has_type ".concat(replace),key.replaceAll("\\(","").replaceAll("\\)",""))).toLispTree();
         else
@@ -367,7 +367,7 @@ public class ErrorRetrieval {
      */
     public List<Derivation> postprocess(){
         // Create and score candidates
-        LogController.begin_track("Error retrieval:");
+        NLULoggerController.begin_track("Error retrieval:");
         // Remove derivations that are the same
         List<Derivation> remove = new ArrayList();
         List<String> formulas = new ArrayList();
@@ -381,14 +381,14 @@ public class ErrorRetrieval {
         }
         this.derivations.removeAll(remove);
         if (ConfigManager.DEBUG > 0)
-            LogController.logs("Checking %d derivations",this.derivations.size());
+            NLULoggerController.logs("Checking %d derivations",this.derivations.size());
 
         if (this.derivations != null) {
             // Get term
             List<UnderspecifiedInfo> missingTerms = checkUnderspecified();
             if (ConfigManager.DEBUG > 0) {
                 for (UnderspecifiedInfo i : missingTerms) {
-                    LogController.logs("Detected underspecified term: %s %s", i.term, i.type.name());
+                    NLULoggerController.logs("Detected underspecified term: %s %s", i.term, i.type.name());
                 }
             }
 
@@ -397,7 +397,7 @@ public class ErrorRetrieval {
             if (ConfigManager.DEBUG > 1) {
                 for (UnderspecifiedInfo termInfo : missingTerms) {
                     for (int i = 0; i < termInfo.candidatesInfo.size(); i++) {
-                        LogController.logs("Final candidates: %s -> %s", termInfo.term, termInfo.candidatesInfo.get(i).toString());
+                        NLULoggerController.logs("Final candidates: %s -> %s", termInfo.term, termInfo.candidatesInfo.get(i).toString());
                     }
                 }
             }
@@ -408,7 +408,7 @@ public class ErrorRetrieval {
             if (ConfigManager.DEBUG > 1) {
                 for (UnderspecifiedInfo termInfo : missingTerms) {
                     for (int i = 0; i < termInfo.candidatesScores.size(); i++) {
-                        LogController.logs("Final scores: %s %f", termInfo.candidates.get(i).toString(), termInfo.candidatesScores.get(i));
+                        NLULoggerController.logs("Final scores: %s %f", termInfo.candidates.get(i).toString(), termInfo.candidatesScores.get(i));
                     }
                 }
             }
@@ -421,10 +421,10 @@ public class ErrorRetrieval {
             }
             if (ConfigManager.DEBUG > 1) {
                 for (String key : replaces.keySet()) {
-                    LogController.logs("Best replacement for %s : %s", key, replaces.get(key));
+                    NLULoggerController.logs("Best replacement for %s : %s", key, replaces.get(key));
                 }
                 for (Map.Entry<String, String> entry : this.underInfo.followUps) {
-                    LogController.logs("FollowUp question -> %s -> %s", entry.getKey(), entry.getValue());
+                    NLULoggerController.logs("FollowUp question -> %s -> %s", entry.getKey(), entry.getValue());
                 }
             }
 
@@ -437,7 +437,7 @@ public class ErrorRetrieval {
             }
         }
 
-        LogController.end_track();
+        NLULoggerController.end_track();
         return this.derivations;
     }
 

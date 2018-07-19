@@ -14,7 +14,7 @@ import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 
 import edu.stanford.nlp.sempre.*;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Option;
 
 /**
@@ -62,7 +62,7 @@ public class DALExecutor extends Executor {
     } catch (Exception e) {
       // Comment this out if we expect lots of innocuous type checking failures
       if (opts.printStackTrace) {
-        LogController.log("Failed to execute " + formula.toString());
+        NLULoggerController.log("Failed to execute " + formula.toString());
         e.printStackTrace();
       }
       return new Response(ErrorValue.badJava(e.toString()));
@@ -406,7 +406,7 @@ public class DALExecutor extends Executor {
 
       cost += typeCastCost(types[i], args[i]);
       if (cost >= INVALID_TYPE_COST) {
-        LogController.dbgs("NOT COMPATIBLE: want %s, got %s with type %s", types[i], args[i], args[i].getClass());
+        NLULoggerController.dbgs("NOT COMPATIBLE: want %s, got %s with type %s", types[i], args[i], args[i].getClass());
         break;
       }
     }

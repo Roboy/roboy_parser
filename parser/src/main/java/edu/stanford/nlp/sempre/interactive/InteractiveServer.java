@@ -37,8 +37,8 @@ import edu.stanford.nlp.sempre.Master;
 import edu.stanford.nlp.sempre.Session;
 import edu.stanford.nlp.sempre.StringValue;
 import edu.stanford.nlp.sempre.Value;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.IOUtils;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.MapUtils;
 import fig.basic.Option;
 
@@ -221,8 +221,8 @@ public class InteractiveServer {
         message = e.toString();
         response.lines.add(String.format("Exceeded the maximum allowed time: %ss", opts.maxExecutionTime));
         response.stats.put("uncaught_error", message);
-        LogController.flush();
-        LogController.resetInfos();
+        NLULoggerController.flush();
+        NLULoggerController.resetInfos();
       } finally {
         future.cancel(true);
         executor.shutdown();
@@ -341,16 +341,16 @@ public class InteractiveServer {
       server.createContext("/", new Handler());
       server.setExecutor(pool);
       server.start();
-      LogController.logs("JSON Server (%d threads) started at http://%s:%s/sempre", opts.numThreads, hostname, opts.port);
-      LogController.log("Press Ctrl-D to terminate.");
-      LogController.begin_threads();
-      while (LogController.stdin.readLine() != null) {
+      NLULoggerController.logs("JSON Server (%d threads) started at http://%s:%s/sempre", opts.numThreads, hostname, opts.port);
+      NLULoggerController.log("Press Ctrl-D to terminate.");
+      NLULoggerController.begin_threads();
+      while (NLULoggerController.stdin.readLine() != null) {
       }
-      LogController.log("Shutting down server...");
+      NLULoggerController.log("Shutting down server...");
       server.stop(0);
-      LogController.log("Shutting down executor pool...");
+      NLULoggerController.log("Shutting down executor pool...");
       pool.shutdown();
-      LogController.end_threads();
+      NLULoggerController.end_threads();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

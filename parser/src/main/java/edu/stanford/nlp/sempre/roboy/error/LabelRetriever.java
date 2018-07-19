@@ -3,10 +3,10 @@ package edu.stanford.nlp.sempre.roboy.error;
 import com.google.gson.Gson;
 import edu.stanford.nlp.sempre.roboy.UnderspecifiedInfo;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.sempre.roboy.utils.SparqlUtils;
 import edu.stanford.nlp.sempre.roboy.utils.XMLReader;
 import fig.basic.IOUtils;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.apache.commons.lang.WordUtils;
 
 import java.io.PrintWriter;
@@ -71,7 +71,7 @@ public class LabelRetriever extends KnowledgeRetriever {
                         result.candidates.add(u);
                         result.candidatesInfo.add(this.gson.toJson(single));
                         if (ConfigManager.DEBUG > 3){
-                            LogController.logs("Label candidate: %s", single.toString());
+                            NLULoggerController.logs("Label candidate: %s", single.toString());
                         }
                         out.println(single.toString());
                     }

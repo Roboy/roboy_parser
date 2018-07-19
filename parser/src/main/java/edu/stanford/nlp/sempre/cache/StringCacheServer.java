@@ -1,6 +1,6 @@
 package edu.stanford.nlp.sempre.cache;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Option;
 import fig.exec.Execution;
 
@@ -73,14 +73,14 @@ public class StringCacheServer implements Runnable {
               response = "OK";
               synchronized (cache) {
                 if (cache.getPath() == null) {
-                  LogController.begin_track("Loading %s", path);
+                  NLULoggerController.begin_track("Loading %s", path);
                   try {
                     cache.init(path, readOnly);
                   } catch (Throwable t) {
                     response = "ERROR: " + t;
                   }
-                  LogController.logs("Response: %s", response);
-                  LogController.end_track();
+                  NLULoggerController.logs("Response: %s", response);
+                  NLULoggerController.end_track();
                 }
               }
             }
@@ -126,7 +126,7 @@ public class StringCacheServer implements Runnable {
           out.flush();
         }
         in.close();
-        LogController.logs("[%s] Closed connection %s: %d gets, %d puts, %d errors", new Date(), client, numGets, numPuts, numErrors);
+        NLULoggerController.logs("[%s] Closed connection %s: %d gets, %d puts, %d errors", new Date(), client, numGets, numPuts, numErrors);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -134,17 +134,17 @@ public class StringCacheServer implements Runnable {
   }
 
   public void run() {
-    LogController.logs("[%s] Starting server on port %d", new Date(), port);
+    NLULoggerController.logs("[%s] Starting server on port %d", new Date(), port);
 
     try {
       ServerSocket server = new ServerSocket(port);
       while (!terminated) {
         Socket client = server.accept();
-        LogController.logs("[%s] Opened connection from %s", new Date(), client);
+        NLULoggerController.logs("[%s] Opened connection from %s", new Date(), client);
         Thread t = new Thread(new ClientHandler(client));
         t.start();
       }
-      LogController.log("Done");
+      NLULoggerController.log("Done");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

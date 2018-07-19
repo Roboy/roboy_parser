@@ -3,9 +3,9 @@ package edu.stanford.nlp.sempre;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 import jline.console.ConsoleReader;
 
 import java.io.IOException;
@@ -14,9 +14,6 @@ import java.io.StringWriter;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.logging.Level;
 
 import com.google.gson.Gson;
 
@@ -166,23 +163,23 @@ public class Master {
   }
 
   protected void printHelp() {
-    LogController.log("Enter an utterance to parse or one of the following commands:");
-    LogController.log("  (help): show this help message");
-    LogController.log("  (status): prints out status of the system");
-    LogController.log("  (get |option|): get a command-line option (e.g., (get Parser.verbose))");
-    LogController.log("  (set |option| |value|): set a command-line option (e.g., (set Parser.verbose 5))");
-    LogController.log("  (reload): reload the grammar/parameters");
-    LogController.log("  (grammar): prints out the grammar");
-    LogController.log("  (params [|file|]): dumps all the model parameters");
-    LogController.log("  (select |candidate index|): show information about the |index|-th candidate of the last utterance.");
-    LogController.log("  (accept |candidate index|): record the |index|-th candidate as the correct answer for the last utterance.");
-    LogController.log("  (answer |answer|): record |answer| as the correct answer for the last utterance (e.g., (answer (list (number 3)))).");
-    LogController.log("  (rule |lhs| (|rhs_1| ... |rhs_k|) |sem|): adds a rule to the grammar (e.g., (rule $Number ($TOKEN) (NumberFn)))");
-    LogController.log("  (type |logical form|): perform type inference (e.g., (type (number 3)))");
-    LogController.log("  (execute |logical form|): execute the logical form (e.g., (execute (call + (number 3) (number 4))))");
-    LogController.log("  (def |key| |value|): define a macro to replace |key| with |value| in all commands (e.g., (def type fb:type.object type)))");
-    LogController.log("  (context [(user |user|) (date |date|) (exchange |exchange|) (graph |graph|)]): prints out or set the context");
-    LogController.log("Press Ctrl-D to exit.");
+    NLULoggerController.log("Enter an utterance to parse or one of the following commands:");
+    NLULoggerController.log("  (help): show this help message");
+    NLULoggerController.log("  (status): prints out status of the system");
+    NLULoggerController.log("  (get |option|): get a command-line option (e.g., (get Parser.verbose))");
+    NLULoggerController.log("  (set |option| |value|): set a command-line option (e.g., (set Parser.verbose 5))");
+    NLULoggerController.log("  (reload): reload the grammar/parameters");
+    NLULoggerController.log("  (grammar): prints out the grammar");
+    NLULoggerController.log("  (params [|file|]): dumps all the model parameters");
+    NLULoggerController.log("  (select |candidate index|): show information about the |index|-th candidate of the last utterance.");
+    NLULoggerController.log("  (accept |candidate index|): record the |index|-th candidate as the correct answer for the last utterance.");
+    NLULoggerController.log("  (answer |answer|): record |answer| as the correct answer for the last utterance (e.g., (answer (list (number 3)))).");
+    NLULoggerController.log("  (rule |lhs| (|rhs_1| ... |rhs_k|) |sem|): adds a rule to the grammar (e.g., (rule $Number ($TOKEN) (NumberFn)))");
+    NLULoggerController.log("  (type |logical form|): perform type inference (e.g., (type (number 3)))");
+    NLULoggerController.log("  (execute |logical form|): execute the logical form (e.g., (execute (call + (number 3) (number 4))))");
+    NLULoggerController.log("  (def |key| |value|): define a macro to replace |key| with |value| in all commands (e.g., (def type fb:type.object type)))");
+    NLULoggerController.log("  (context [(user |user|) (date |date|) (exchange |exchange|) (graph |graph|)]): prints out or set the context");
+    NLULoggerController.log("Press Ctrl-D to exit.");
   }
 
   public void runServer() {
@@ -200,13 +197,13 @@ public class Master {
       reader.setPrompt("> ");
       String line;
       while ((line = reader.readLine()) != null) {
-        int indent = LogController.getIndLevel();
+        int indent = NLULoggerController.getIndLevel();
         try {
           Response res = processQuery(session, line);
           System.out.println(res.getAll());
         } catch (Throwable t) {
-          while (LogController.getIndLevel() > indent)
-            LogController.end_track();
+          while (NLULoggerController.getIndLevel() > indent)
+            NLULoggerController.end_track();
           t.printStackTrace();
         }
       }
@@ -237,7 +234,7 @@ public class Master {
     // Hack: modifying a static variable to capture the logging.
     // Make sure we're synchronized!
     StringWriter stringOut = new StringWriter();
-    LogController.setFileOut(new PrintWriter(stringOut));
+    NLULoggerController.setFileOut(new PrintWriter(stringOut));
 
     if (line.startsWith("("))
       handleCommand(session, line, response);
@@ -247,7 +244,7 @@ public class Master {
     // Clean up
     for (String outLine : stringOut.toString().split("\n"))
       response.lines.add(outLine);
-    LogController.setFileOut(null);
+    NLULoggerController.setFileOut(null);
 
     // Log interaction to disk
     if (!Strings.isNullOrEmpty(opts.logPath)) {
@@ -312,13 +309,13 @@ public class Master {
     FeatureVector.logChoices("Pred", choices);
 
     // Print denotation
-    LogController.begin_track("Top formula");
-    LogController.logs("%s", deriv.formula);
-    LogController.end_track();
+    NLULoggerController.begin_track("Top formula");
+    NLULoggerController.logs("%s", deriv.formula);
+    NLULoggerController.end_track();
     if (deriv.value != null) {
-      LogController.begin_track("Top value");
+      NLULoggerController.begin_track("Top value");
       deriv.value.log();
-      LogController.end_track();
+      NLULoggerController.end_track();
     }
   }
 
@@ -331,56 +328,56 @@ public class Master {
     if (command == null || command.equals("help")) {
       printHelp();
     } else if (command.equals("status")) {
-      LogController.begin_track("%d sessions", sessions.size());
+      NLULoggerController.begin_track("%d sessions", sessions.size());
       for (Session otherSession : sessions.values())
-        LogController.log(otherSession + (session == otherSession ? " *" : ""));
-      LogController.end_track();
+        NLULoggerController.log(otherSession + (session == otherSession ? " *" : ""));
+      NLULoggerController.end_track();
       StopWatchSetController.logStats();
     } else if (command.equals("reload")) {
       builder.build();
     } else if (command.equals("grammar")) {
       for (Rule rule : builder.grammar.rules)
-        LogController.logs("%s", rule.toLispTree());
+        NLULoggerController.logs("%s", rule.toLispTree());
     } else if (command.equals("params")) {
       if (tree.children.size() == 1) {
-        builder.params.write(LogController.stdout);
-        if (LogController.getFileOut() != null)
-          builder.params.write(LogController.getFileOut());
+        builder.params.write(NLULoggerController.stdout);
+        if (NLULoggerController.getFileOut() != null)
+          builder.params.write(NLULoggerController.getFileOut());
       } else {
         builder.params.write(tree.child(1).value);
       }
     } else if (command.equals("get")) {
       if (tree.children.size() != 2) {
-        LogController.log("Invalid usage: (get |option|)");
+        NLULoggerController.log("Invalid usage: (get |option|)");
         return;
       }
       String option = tree.child(1).value;
-      LogController.logs("%s", getOptionsParser().getValue(option));
+      NLULoggerController.logs("%s", getOptionsParser().getValue(option));
     } else if (command.equals("set")) {
       if (tree.children.size() != 3) {
-        LogController.log("Invalid usage: (set |option| |value|)");
+        NLULoggerController.log("Invalid usage: (set |option| |value|)");
         return;
       }
       String option = tree.child(1).value;
       String value = tree.child(2).value;
       if (!getOptionsParser().parse(new String[] {"-" + option, value}))
-        LogController.log("Unknown option: " + option);
+        NLULoggerController.log("Unknown option: " + option);
     } else if (command.equals("select") || command.equals("accept") ||
                command.equals("s") || command.equals("a")) {
       // Select an answer
       if (tree.children.size() != 2) {
-        LogController.logs("Invalid usage: (%s |candidate index|)", command);
+        NLULoggerController.logs("Invalid usage: (%s |candidate index|)", command);
         return;
       }
 
       Example ex = session.getLastExample();
       if (ex == null) {
-        LogController.log("No examples - please enter a query first.");
+        NLULoggerController.log("No examples - please enter a query first.");
         return;
       }
       int index = Integer.parseInt(tree.child(1).value);
       if (index < 0 || index >= ex.predDerivations.size()) {
-        LogController.log("Candidate index out of range: " + index);
+        NLULoggerController.log("Candidate index out of range: " + index);
         return;
       }
 
@@ -406,13 +403,13 @@ public class Master {
       }
     } else if (command.equals("answer")) {
       if (tree.children.size() != 2) {
-        LogController.log("Missing answer.");
+        NLULoggerController.log("Missing answer.");
       }
 
       // Set the target value.
       Example ex = session.getLastExample();
       if (ex == null) {
-        LogController.log("Please enter a query first.");
+        NLULoggerController.log("Please enter a query first.");
         return;
       }
       ex.setTargetValue(Values.fromLispTree(tree.child(1)));
@@ -421,22 +418,22 @@ public class Master {
       int n = builder.grammar.rules.size();
       builder.grammar.addStatement(tree.toString());
       for (int i = n; i < builder.grammar.rules.size(); i++)
-        LogController.logs("Added %s", builder.grammar.rules.get(i));
+        NLULoggerController.logs("Added %s", builder.grammar.rules.get(i));
       // Need to update the parser given that the grammar has changed.
       builder.parser = null;
       builder.buildUnspecified();
     } else if (command.equals("type")) {
-      LogController.logs("%s", TypeInference.inferType(Formulas.fromLispTree(tree.child(1))));
+      NLULoggerController.logs("%s", TypeInference.inferType(Formulas.fromLispTree(tree.child(1))));
     } else if (command.equals("execute")) {
       Example ex = session.getLastExample();
       ContextValue context = (ex != null ? ex.context : session.context);
       Executor.Response execResponse = builder.executor.execute(Formulas.fromLispTree(tree.child(1)), context);
-      LogController.logs("%s", execResponse.value);
+      NLULoggerController.logs("%s", execResponse.value);
     } else if (command.equals("def")) {
       builder.grammar.interpretMacroDef(tree);
     } else if (command.equals("context")) {
       if (tree.children.size() == 1) {
-        LogController.logs("%s", session.context);
+        NLULoggerController.logs("%s", session.context);
       } else {
         session.context = new ContextValue(tree);
       }
@@ -448,7 +445,7 @@ public class Master {
         session.context.exchanges, graph);
     }
     else {
-      LogController.log("Invalid command: " + tree);
+      NLULoggerController.log("Invalid command: " + tree);
     }
   }
 
@@ -463,17 +460,17 @@ public class Master {
         .createExample();
 
     if (!Strings.isNullOrEmpty(opts.newExamplesPath)) {
-      LogController.begin_track("Adding new example");
+      NLULoggerController.begin_track("Adding new example");
       Dataset.appendExampleToFile(opts.newExamplesPath, ex);
-      LogController.end_track();
+      NLULoggerController.end_track();
     }
 
     if (opts.onlineLearnExamples) {
-      LogController.begin_track("Updating parameters");
+      NLULoggerController.begin_track("Updating parameters");
       learner.onlineLearnExample(origEx);
       if (!Strings.isNullOrEmpty(opts.newParamsPath))
         builder.params.write(opts.newParamsPath);
-      LogController.end_track();
+      NLULoggerController.end_track();
     }
   }
 

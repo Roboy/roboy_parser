@@ -3,7 +3,6 @@ package edu.stanford.nlp.sempre;
 import java.lang.reflect.Constructor;
 
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.exec.Execution;
 

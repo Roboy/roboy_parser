@@ -4,8 +4,8 @@ import edu.stanford.nlp.sempre.cache.StringCache;
 import edu.stanford.nlp.sempre.cache.StringCacheUtils;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry;
 import edu.stanford.nlp.sempre.freebase.lexicons.LexicalEntry.LexicalEntrySerializer;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import org.apache.lucene.queryparser.classic.ParseException;
 
@@ -40,12 +40,12 @@ public final class Lexicon {
   public EntityLexicon getEntityLexicon() { return entityLexicon; }
 
   private Lexicon() throws IOException {
-    LogController.begin_track("Lexicon()");
+    NLULoggerController.begin_track("Lexicon()");
     // TODO(joberant): why is BinaryLexicon special? -- wait why is it special?
     entityLexicon = EntityLexicon.getInstance();
     unaryLexicon = UnaryLexicon.getInstance();
     binaryLexicon = BinaryLexicon.getInstance();
-    LogController.end_track();
+    NLULoggerController.end_track();
 
     if (opts.cachePath != null)
       cache = StringCacheUtils.create(opts.cachePath);

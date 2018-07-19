@@ -6,11 +6,11 @@ import edu.stanford.nlp.sempre.freebase.FbFormulasInfo.BinaryFormulaInfo;
 import edu.stanford.nlp.sempre.MergeFormula.Mode;
 import edu.stanford.nlp.sempre.freebase.utils.FileUtils;
 import edu.stanford.nlp.sempre.freebase.utils.FormatConverter;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
 import edu.stanford.nlp.util.StringUtils;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.MapUtils;
 import fig.basic.Option;
 import fig.exec.Execution;
@@ -368,7 +368,7 @@ public class Free917Converter implements Runnable {
       examples.add(example.toJson());
       formulaWriter.println(example.targetFormula);
     }
-    LogController.log("Arg count distribution: " + argnumCounter);
+    NLULoggerController.log("Arg count distribution: " + argnumCounter);
     reader.close();
     formulaWriter.close();
 
@@ -681,7 +681,7 @@ public class Free917Converter implements Runnable {
 
       MapUtils.add(idToNameMap, id, name);
     }
-    LogController.log("Number of entries: " + idToNameMap.size());
+    NLULoggerController.log("Number of entries: " + idToNameMap.size());
 
     PrintWriter writer = IOUtils.getPrintWriter(outFile);
     int i = 0;

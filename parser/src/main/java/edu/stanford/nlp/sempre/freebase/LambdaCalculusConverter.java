@@ -1,7 +1,8 @@
 package edu.stanford.nlp.sempre.freebase;
 
 import edu.stanford.nlp.sempre.*;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import fig.exec.Execution;
 
 import java.io.BufferedReader;
@@ -75,13 +76,13 @@ public class LambdaCalculusConverter implements Runnable {
   }
 
   public void readPrereqs() {
-    LogController.begin_track("Reading prereq");
+    NLULoggerController.begin_track("Reading prereq");
     readSpec();
     readPrimitives();
     readVars();
     readStringMap(opts.replacePath, replaceMap);
     readStringMap(opts.manualConversionsPath, manualConversionsMap);
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   void readSpec() {
@@ -130,7 +131,7 @@ public class LambdaCalculusConverter implements Runnable {
   Formula toPredicate(String func) {
     boolean reverse = false;
     while (func.startsWith("!")) {
-      LogController.log(func);
+      NLULoggerController.log(func);
       reverse = !reverse;
       func = func.substring(1);
     }
@@ -194,7 +195,7 @@ public class LambdaCalculusConverter implements Runnable {
     Formula formula = null;
     for (int i = 0; i < clauses.size(); i++) {
       if (hit[i]) {
-        LogController.log("hit " + i);
+        NLULoggerController.log("hit " + i);
         continue;
       }
       // if (!hasHeadVar(clauses.get(i), headVar)) continue;
@@ -211,11 +212,11 @@ public class LambdaCalculusConverter implements Runnable {
 
   Formula toOrFormula(List<LispTree> clauses, boolean[] hit, String headVar, List<String> existsVars) {
     // (or (town:t $1) (city:t $1))
-    LogController.log("# or clauses: " + clauses.size());
+    NLULoggerController.log("# or clauses: " + clauses.size());
     Formula formula = null;
     for (int i = 0; i < clauses.size(); i++) {
       if (hit[i]) {
-        LogController.log("hit " + i);
+        NLULoggerController.log("hit " + i);
         continue;
       }
       // if (!hasHeadVar(clauses.get(i), headVar)) continue;
@@ -458,18 +459,18 @@ public class LambdaCalculusConverter implements Runnable {
           }
 
           LispTree tree = LispTree.proto.parseFromString(preprocessPredicates(line, utterance));
-          LogController.logs(color.colorize("IN [%d]: %s", "blue"), newId, utterance);
-          LogController.logs(color.colorize("IN [%d]: %s", "purple"), newId, tree);
+          NLULoggerController.logs(color.colorize("IN [%d]: %s", "blue"), newId, utterance);
+          NLULoggerController.logs(color.colorize("IN [%d]: %s", "purple"), newId, tree);
           ArrayList<String> existsVars = new ArrayList<String>();
 
           if (manualConversionsMap.containsKey(line)) {
-            LogController.logs("MANUAL CONVERSION=%s", line);
+            NLULoggerController.logs("MANUAL CONVERSION=%s", line);
             ex.setTargetFormula(Formula.fromString(manualConversionsMap.get(line)));
           } else {
-            LogController.log("AUTOMATIC CONVERSION");
+            NLULoggerController.log("AUTOMATIC CONVERSION");
             ex.setTargetFormula(toFormula(tree, null, existsVars));
           }
-          LogController.logs(color.colorize("OUT [%d]: %s", "yellow"), newId, ex.createExample().targetFormula.toLispTree());
+          NLULoggerController.logs(color.colorize("OUT [%d]: %s", "yellow"), newId, ex.createExample().targetFormula.toLispTree());
           examples.add(ex.createExample());
           ex = null;
         }
@@ -497,15 +498,15 @@ public class LambdaCalculusConverter implements Runnable {
         break;
       }
 
-      LogController.logs(color.colorize("[%d] %s", "blue"), exInd, ex.utterance);
-      LogController.logs(color.colorize("[%d] %s", "yellow"), exInd, ex.targetFormula.toString());
+      NLULoggerController.logs(color.colorize("[%d] %s", "blue"), exInd, ex.utterance);
+      NLULoggerController.logs(color.colorize("[%d] %s", "yellow"), exInd, ex.targetFormula.toString());
       try {
         Executor.Response response = executor.execute(ex.targetFormula, null);
-        LogController.logs("\t\t [%d] %s", exInd, response.value.toString());
+        NLULoggerController.logs("\t\t [%d] %s", exInd, response.value.toString());
         validExampleIds.add(exInd);
         validExampleLengths.add(ex.utterance.length());
       } catch (RuntimeException e) {
-        LogController.error(e);
+        NLULoggerController.error(e);
         failedExampleIds.add(exInd);
       }
       exInd++;
@@ -537,12 +538,12 @@ public class LambdaCalculusConverter implements Runnable {
   }
 
   void printSummary() {
-    LogController.logs("%d input examples", examples.size());
-    LogController.logs("%d successful executions", validExampleIds.size());
-    LogController.logs("Failed executions (%d):", failedExampleIds.size());
+    NLULoggerController.logs("%d input examples", examples.size());
+    NLULoggerController.logs("%d successful executions", validExampleIds.size());
+    NLULoggerController.logs("Failed executions (%d):", failedExampleIds.size());
     for (int k : failedExampleIds) {
       Example ex = examples.get(k - 1);
-      LogController.log(ex.toJson());
+      NLULoggerController.log(ex.toJson());
     }
   }
 

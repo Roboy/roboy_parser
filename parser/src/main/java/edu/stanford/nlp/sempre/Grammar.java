@@ -1,11 +1,11 @@
 package edu.stanford.nlp.sempre;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 import fig.exec.Execution;
 
 import java.io.File;
@@ -55,10 +55,10 @@ public class Grammar {
   List<String> statements = new ArrayList<>();
 
   public void read() {
-    LogController.begin_track("Grammar.read");
+    NLULoggerController.begin_track("Grammar.read");
     read(opts.inPaths);
-    LogController.logs("%s rules", rules.size());
-    LogController.end_track();
+    NLULoggerController.logs("%s rules", rules.size());
+    NLULoggerController.end_track();
   }
 
   public void read(String path) { read(Collections.singletonList(path)); }
@@ -82,17 +82,17 @@ public class Grammar {
     for (Rule rule : rules) {
       for (String item : rule.rhs) {
         if (Rule.isCat(item) && !defined.contains(item)) {
-          LogController.warnings("Category not defined in the grammar: %s; used in rule: %s", item, rule);
+          NLULoggerController.warnings("Category not defined in the grammar: %s; used in rule: %s", item, rule);
         }
       }
     }
 
     // Check if all tags are defined in a grammar file
-    LogController.logs("Valid tags: %s", validTags);
-    LogController.logs("Used tags: %s", new TreeSet<>(opts.tags));
+    NLULoggerController.logs("Valid tags: %s", validTags);
+    NLULoggerController.logs("Used tags: %s", new TreeSet<>(opts.tags));
     for (String tag : opts.tags) {
       if (!validTags.contains(tag)) {
-        LogController.warnings("Tag %s not defined in grammar", tag);
+        NLULoggerController.warnings("Tag %s not defined in grammar", tag);
       }
     }
   }
@@ -257,7 +257,7 @@ public class Grammar {
 
   private static String checkCatName(String cat) {
     if (isIntermediate(cat))
-      LogController.warnings("Category '%s' starts with '$Intermediate'; please avoid this unless you know what you are doing.");
+      NLULoggerController.warnings("Category '%s' starts with '$Intermediate'; please avoid this unless you know what you are doing.");
     return cat;
   }
 

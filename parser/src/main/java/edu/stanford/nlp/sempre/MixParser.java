@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import edu.stanford.nlp.sempre.roboy.lexicons.word2vec.Word2vec;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Option;
 import fig.basic.Pair;
 
@@ -44,7 +44,7 @@ public class MixParser extends Parser {
     parsers = new ArrayList<>();
     for (String parserAndOptions : opts.parsers) {
       if (opts.verbose >= 1)
-        LogController.logs("Adding parser %s", parserAndOptions);
+        NLULoggerController.logs("Adding parser %s", parserAndOptions);
       String[] tokens = parserAndOptions.split(":");
       if (tokens.length > 2)
         throw new RuntimeException("Invalid parser options: " + parserAndOptions);
@@ -136,17 +136,17 @@ class MixParserState extends ParserState {
     for (Pair<Parser, MixParserOption> pair : ((MixParser) parser).parsers) {
       if (!pair.getSecond().isAllowed(computeExpectedCounts)) {
         if (MixParser.opts.verbose >= 1)
-          LogController.logs("Skipping %s", pair.getFirst().getClass().getSimpleName());
+          NLULoggerController.logs("Skipping %s", pair.getFirst().getClass().getSimpleName());
         continue;
       }
       if (MixParser.opts.verbose >= 1)
-        LogController.begin_track("Using %s", pair.getFirst().getClass().getSimpleName());
+        NLULoggerController.begin_track("Using %s", pair.getFirst().getClass().getSimpleName());
       ParserState parserState = pair.getFirst().newParserState(params, ex, false);
       parserState.infer();
       predDerivations.addAll(parserState.predDerivations);
       if (MixParser.opts.verbose >= 1) {
-        LogController.logs("Number of derivations: %d", parserState.predDerivations.size());
-        LogController.end_track();
+        NLULoggerController.logs("Number of derivations: %d", parserState.predDerivations.size());
+        NLULoggerController.end_track();
       }
 
     }

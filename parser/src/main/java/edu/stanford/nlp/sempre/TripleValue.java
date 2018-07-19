@@ -1,7 +1,6 @@
 package edu.stanford.nlp.sempre;
 
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.util.*;
 

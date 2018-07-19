@@ -1,8 +1,8 @@
 package edu.stanford.nlp.sempre;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
 import fig.basic.Option;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * Takes two unaries and merges (takes the intersection) of them.
@@ -49,12 +49,12 @@ public class MergeFn extends SemanticFn {
         SemType type = child0.type.meet(child1.type);
         FeatureVector features = new FeatureVector();
         if (opts.verbose >= 5)
-          LogController.logs("MergeFn: %s | %s | %s", child0, child1, type);
+          NLULoggerController.logs("MergeFn: %s | %s | %s", child0, child1, type);
 
         if (!type.isValid()) {
           if (opts.hardTypeCheck) {
             if (opts.showTypeCheckFailures)
-              LogController.warnings("MergeFn: type check failed: [%s : %s] AND [%s : %s]", child0.formula, child0.type, child1.formula, child1.type);
+              NLULoggerController.warnings("MergeFn: type check failed: [%s : %s] AND [%s : %s]", child0.formula, child0.type, child1.formula, child1.type);
             return null;
           }
         }

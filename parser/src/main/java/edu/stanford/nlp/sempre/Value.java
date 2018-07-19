@@ -2,8 +2,8 @@ package edu.stanford.nlp.sempre;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 import java.util.Comparator;
 
@@ -16,7 +16,7 @@ public abstract class Value {
   public abstract LispTree toLispTree();
 
   // Print using LogController.
-  public void log() { LogController.logs("%s", toString()); }
+  public void log() { NLULoggerController.logs("%s", toString()); }
 
   @JsonValue
   public String toString() { return toLispTree().toString(); }

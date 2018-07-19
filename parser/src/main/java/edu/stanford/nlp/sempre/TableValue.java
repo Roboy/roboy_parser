@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre;
 
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.StrUtils;
 
 import java.util.ArrayList;
@@ -62,10 +62,10 @@ public class TableValue extends Value {
   }
 
   public void log() {
-    LogController.begin_track("%s", StrUtils.join(header, "\t"));
+    NLULoggerController.begin_track("%s", StrUtils.join(header, "\t"));
     for (List<Value> row : rows)
-      LogController.logs("%s", StrUtils.join(row, "\t"));
-    LogController.end_track();
+      NLULoggerController.logs("%s", StrUtils.join(row, "\t"));
+    NLULoggerController.end_track();
   }
 
   // Note: don't compare the headers right now

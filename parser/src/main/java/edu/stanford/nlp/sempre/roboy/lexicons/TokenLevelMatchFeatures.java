@@ -2,9 +2,9 @@ package edu.stanford.nlp.sempre.roboy.lexicons;
 
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
 import edu.stanford.nlp.sempre.roboy.utils.FileUtils;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 
 import java.util.Arrays;
@@ -182,8 +182,8 @@ public final class TokenLevelMatchFeatures {
   public static Counter<String> extractTokenMatchFeatures(List<String> source, List<String> target, boolean strict) {
 
     if (ConfigManager.DEBUG >= 1) {
-      LogController.log("SOURCE: " + source);
-      LogController.log("TARGET: " + target);
+      NLULoggerController.log("SOURCE: " + source);
+      NLULoggerController.log("TARGET: " + target);
     }
 
     Counter<String> res = new ClassicCounter<String>();
@@ -197,7 +197,7 @@ public final class TokenLevelMatchFeatures {
         double cover = (double) matchLength / target.size();
         if (ConfigManager.DEBUG >= 1) {
           if (cover > 0) {
-            LogController.logs("Source index %s, target index %s, cover %s", i, j, cover);
+            NLULoggerController.logs("Source index %s, target index %s, cover %s", i, j, cover);
           }
         }
         if (cover > 0) {

@@ -2,8 +2,6 @@ package edu.stanford.nlp.sempre.roboy.utils;
 
 import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.roboy.DatabaseInfo;
-import edu.stanford.nlp.sempre.cache.StringCache;
-import edu.stanford.nlp.sempre.cache.StringCacheUtils;
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -14,30 +12,11 @@ import java.io.*;
 import java.util.*;
 
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import com.google.common.collect.Lists;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.atlas.json.*;
-import org.apache.jena.query.*;
 
 /**
  * SPARQL utilities for quering some endpoint
@@ -117,7 +96,7 @@ public class SparqlUtils {
                 return null;
         }
         catch(UnsupportedEncodingException e){
-            LogController.logs("WrongFormat of the input: %s", json);
+            NLULoggerController.logs("WrongFormat of the input: %s", json);
         }
         return null;
     }
@@ -136,8 +115,8 @@ public class SparqlUtils {
             String url = String.format("%s?default-graph-uri=http://dbpedia.org&query=%s&format=xml",
                     endpointUrl, URLEncoder.encode(formQuery(json,"en"), "UTF-8"));
             if(ConfigManager.DEBUG > 5) {
-                LogController.logs("SPARQL query: %s", formQuery(json));
-                LogController.logs("Query: %s", url);
+                NLULoggerController.logs("SPARQL query: %s", formQuery(json));
+                NLULoggerController.logs("Query: %s", url);
             }
             ServerResponse response = makeRequest(url);
 
@@ -159,7 +138,7 @@ public class SparqlUtils {
                 return null;
         }
         catch(UnsupportedEncodingException e){
-            LogController.logs("WrongFormat of the input: %s", json);
+            NLULoggerController.logs("WrongFormat of the input: %s", json);
         }
         return null;
     }
@@ -187,8 +166,8 @@ public class SparqlUtils {
                 list = reader.readArrayXml(response.getXml());
             }
             if(ConfigManager.DEBUG > 7) {
-                LogController.logs("SPARQL query: %s", formQuery(json));
-                LogController.logs("URL: %s", url);
+                NLULoggerController.logs("SPARQL query: %s", formQuery(json));
+                NLULoggerController.logs("URL: %s", url);
                 System.out.println("Result: "+response.getXml());
                 System.out.println("Result: "+list.toString());
             }
@@ -204,7 +183,7 @@ public class SparqlUtils {
                 return null;
         }
         catch(UnsupportedEncodingException e){
-            LogController.logs("WrongFormat of the input: %s", json);
+            NLULoggerController.logs("WrongFormat of the input: %s", json);
         }
         return null;
     }
@@ -239,7 +218,7 @@ public class SparqlUtils {
             }
         }
         catch(UnsupportedEncodingException e){
-            LogController.logs("WrongFormat of the input: %s", json);
+            NLULoggerController.logs("WrongFormat of the input: %s", json);
         }
         return null;
     }

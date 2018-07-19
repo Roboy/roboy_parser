@@ -2,8 +2,8 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 /**
  * Prune derivations during parsing.
@@ -55,7 +55,7 @@ public class DerivationPruner {
       allStrategyNames.addAll(computer.getAllStrategyNames());
     for (String strategy : opts.pruningStrategies) {
       if (!allStrategyNames.contains(strategy))
-        LogController.fails("Pruning strategy '%s' not found!", strategy);
+        NLULoggerController.fails("Pruning strategy '%s' not found!", strategy);
     }
   }
 
@@ -89,7 +89,7 @@ public class DerivationPruner {
     for (DerivationPruningComputer computer : pruningComputers) {
       if ((matchedStrategy = computer.isPruned(deriv)) != null) {
         if (opts.pruningVerbosity >= 2)
-          LogController.logs("PRUNED [%s] %s", matchedStrategy, deriv.formula);
+          NLULoggerController.logs("PRUNED [%s] %s", matchedStrategy, deriv.formula);
         return true;
       }
     }

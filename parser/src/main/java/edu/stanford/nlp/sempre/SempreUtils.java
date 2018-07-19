@@ -1,6 +1,6 @@
 package edu.stanford.nlp.sempre;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.MapUtils;
 
 import java.util.Map;
@@ -21,10 +21,10 @@ public final class SempreUtils {
   }
 
   public static <K, V> void logMap(Map<K, V> map, String desc) {
-    LogController.begin_track("Logging %s map", desc);
+    NLULoggerController.begin_track("Logging %s map", desc);
     for (K key : map.keySet())
-      LogController.log(key + "\t" + map.get(key));
-    LogController.end_track();
+      NLULoggerController.log(key + "\t" + map.get(key));
+    NLULoggerController.end_track();
   }
 
   public static void addToDoubleMap(Map<String, Double> mutatedMap, Map<String, Double> addedMap) {

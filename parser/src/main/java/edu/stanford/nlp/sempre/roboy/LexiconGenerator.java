@@ -2,11 +2,10 @@ package edu.stanford.nlp.sempre.roboy;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import edu.stanford.nlp.sempre.SimpleLexicon;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
 import edu.stanford.nlp.sempre.roboy.utils.SparqlUtils;
 import fig.basic.IOUtils;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
@@ -31,7 +30,7 @@ public class LexiconGenerator {
 
         for (String lexeme: lexemes){
             if (ConfigManager.DEBUG > 0)
-                LogController.logs("New lexeme added: %s",lexeme);
+                NLULoggerController.logs("New lexeme added: %s",lexeme);
             out.println(lexeme);
 //            SimpleLexicon.getSingleton().add(lexeme);
         }

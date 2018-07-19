@@ -3,8 +3,8 @@ package edu.stanford.nlp.sempre;
 import java.util.ArrayList;
 import java.util.List;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 /**
  * Maps a string to a number (double).
@@ -85,7 +85,7 @@ public class NumberFn extends SemanticFn {
               NumberValue numberValue = new NumberValue(Double.parseDouble(value));
               if (opts.allowedRange != null) {
                 if (numberValue.value < opts.allowedRange.get(0) || numberValue.value > opts.allowedRange.get(1)) {
-                  LogController.warnings("NumberFn: %f is outside of the allowed range %s", numberValue.value, opts.allowedRange);
+                  NLULoggerController.warnings("NumberFn: %f is outside of the allowed range %s", numberValue.value, opts.allowedRange);
                   return null;
                 }
               }
@@ -97,7 +97,7 @@ public class NumberFn extends SemanticFn {
                       .type(type)
                       .createDerivation();
             } catch (NumberFormatException e) {
-              LogController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+              NLULoggerController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
             }
           }
         }
@@ -117,7 +117,7 @@ public class NumberFn extends SemanticFn {
                       .type(type)
                       .createDerivation();
             } catch (NumberFormatException e) {
-              LogController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+              NLULoggerController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
             }
           }
         }
@@ -137,7 +137,7 @@ public class NumberFn extends SemanticFn {
                       .type(type)
                       .createDerivation();
             } catch (NumberFormatException e) {
-              LogController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+              NLULoggerController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
             }
           }
         }
@@ -157,7 +157,7 @@ public class NumberFn extends SemanticFn {
                       .type(type)
                       .createDerivation();
             } catch (NumberFormatException e) {
-              LogController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+              NLULoggerController.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
             }
           }
         }

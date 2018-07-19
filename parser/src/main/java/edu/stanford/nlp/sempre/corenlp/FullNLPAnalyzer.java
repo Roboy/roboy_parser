@@ -14,7 +14,7 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
@@ -23,7 +23,7 @@ import edu.stanford.nlp.trees.Tree;
 import com.google.common.collect.Lists;
 import com.google.common.base.Joiner;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
 import java.io.*;
 import java.util.*;
@@ -174,7 +174,7 @@ public class FullNLPAnalyzer extends InfoAnalyzer {
         List<String> results = new ArrayList<>();
         for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
             results.add(sentence.toString());
-            LogController.logs(sentence.toString());
+            NLULoggerController.logs(sentence.toString());
         }
         return results;
     }
@@ -254,14 +254,14 @@ public class FullNLPAnalyzer extends InfoAnalyzer {
                 System.out.println("Enter some text:");
                 String text = reader.readLine();
                 LanguageInfo langInfo = analyzer.analyze(text);
-                LogController.begin_track("Analyzing \"%s\"", text);
-                LogController.logs("tokens: %s", langInfo.tokens);
-                LogController.logs("lemmaTokens: %s", langInfo.lemmaTokens);
-                LogController.logs("posTags: %s", langInfo.posTags);
-                LogController.logs("nerTags: %s", langInfo.nerTags);
-                LogController.logs("nerValues: %s", langInfo.nerValues);
-                LogController.logs("dependencyChildren: %s", langInfo.dependencyChildren);
-                LogController.end_track();
+                NLULoggerController.begin_track("Analyzing \"%s\"", text);
+                NLULoggerController.logs("tokens: %s", langInfo.tokens);
+                NLULoggerController.logs("lemmaTokens: %s", langInfo.lemmaTokens);
+                NLULoggerController.logs("posTags: %s", langInfo.posTags);
+                NLULoggerController.logs("nerTags: %s", langInfo.nerTags);
+                NLULoggerController.logs("nerValues: %s", langInfo.nerValues);
+                NLULoggerController.logs("dependencyChildren: %s", langInfo.dependencyChildren);
+                NLULoggerController.end_track();
             } catch (IOException e) {
                 e.printStackTrace();
             }

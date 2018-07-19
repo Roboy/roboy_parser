@@ -1,22 +1,14 @@
 package edu.stanford.nlp.sempre;
 
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import jline.console.ConsoleReader;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import java.lang.reflect.Field;
-import java.util.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import edu.stanford.nlp.sempre.Master.*;
@@ -44,15 +36,15 @@ public class SocketConnectionHandler implements Runnable {
           while (clientSocket.isConnected()) {
             line = input.readLine();
             if (line != null) {
-              LogController.logs("%s", line);
-              int indent = LogController.getIndLevel();
+              NLULoggerController.logs("%s", line);
+              int indent = NLULoggerController.getIndLevel();
               try {
                 Response res = master.processQuery(session, line);
                 System.out.println(res.getAll());
                 output.println(res.getAll());
               } catch (Throwable t) {
-                while (LogController.getIndLevel() > indent)
-                  LogController.end_track();
+                while (NLULoggerController.getIndLevel() > indent)
+                  NLULoggerController.end_track();
                 t.printStackTrace();
               }
             }

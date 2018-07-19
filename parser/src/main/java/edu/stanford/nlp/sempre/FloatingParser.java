@@ -1,8 +1,8 @@
 package edu.stanford.nlp.sempre;
 
 import edu.stanford.nlp.sempre.roboy.lexicons.word2vec.Word2vec;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 import fig.exec.Execution;
 
 import java.io.PrintWriter;
@@ -213,7 +213,7 @@ class FloatingParserState extends ParserState {
       featurizeAndScoreDerivation(deriv);
     if (Parser.opts.pruneErrorValues && deriv.value instanceof ErrorValue) return;
     if (Parser.opts.verbose >= 4)
-      LogController.logs("addToChart %s: %s", cell, deriv);
+      NLULoggerController.logs("addToChart %s: %s", cell, deriv);
     MapUtils.addToList(chart, cell, deriv);
   }
 
@@ -229,7 +229,7 @@ class FloatingParserState extends ParserState {
   }
 
   private void applyRuleActual(Rule rule, int start, int end, int depth, Derivation child1, Derivation child2, String canonicalUtterance) {
-    if (Parser.opts.verbose >= 5) LogController.logs("applyRule %s [%s:%s] depth=%s, %s %s", rule, start, end, depth, child1, child2);
+    if (Parser.opts.verbose >= 5) NLULoggerController.logs("applyRule %s [%s:%s] depth=%s, %s %s", rule, start, end, depth, child1, child2);
     List<Derivation> children;
     if (child1 == null)  // 0-ary
       children = Collections.emptyList();
@@ -490,7 +490,7 @@ class FloatingParserState extends ParserState {
         categories.add(rule.lhs);
 
       if (Parser.opts.verbose >= 1)
-        LogController.begin_track_printAll("Anchored");
+        NLULoggerController.begin_track_printAll("Anchored");
       // Build up anchored derivations (like the BeamParser)
       int numTokens = ex.numTokens();
       for (int len = 1; len <= numTokens; len++) {
@@ -503,19 +503,19 @@ class FloatingParserState extends ParserState {
         }
       }
       if (Parser.opts.verbose >= 1)
-        LogController.end_track();
+        NLULoggerController.end_track();
 
       // Build up floating derivations
       for (int depth = (FloatingParser.opts.initialFloatingHasZeroDepth ? 0 : 1); depth <= FloatingParser.opts.maxDepth; depth++) {
         if (Parser.opts.verbose >= 1)
-          LogController.begin_track_printAll("%s = %d", FloatingParser.opts.useSizeInsteadOfDepth ? "SIZE" : "DEPTH", depth);
+          NLULoggerController.begin_track_printAll("%s = %d", FloatingParser.opts.useSizeInsteadOfDepth ? "SIZE" : "DEPTH", depth);
         buildFloating(depth);
         for (String cat : categories) {
           String cell = floatingCell(cat, depth).toString();
           pruneCell(cell, chart.get(cell));
         }
         if (Parser.opts.verbose >= 1)
-          LogController.end_track();
+          NLULoggerController.end_track();
         // Early stopping
         if (computeExpectedCounts && ((FloatingParser) parser).earlyStopOnConsistent) {
           // Consistent derivation found?
@@ -525,7 +525,7 @@ class FloatingParserState extends ParserState {
             for (Derivation rootDeriv : rootDerivs) {
               rootDeriv.ensureExecuted(parser.executor, ex.context);
               if (parser.valueEvaluator.getCompatibility(ex.targetValue, rootDeriv.value) == 1) {
-                LogController.logs("Early stopped: consistent derivation found at depth = %d", depth);
+                NLULoggerController.logs("Early stopped: consistent derivation found at depth = %d", depth);
                 return;
               }
             }
@@ -534,7 +534,7 @@ class FloatingParserState extends ParserState {
         if (((FloatingParser) parser).earlyStopOnNumDerivs > 0) {
           // Too many derivations generated?
           if (numOfFeaturizedDerivs > ((FloatingParser) parser).earlyStopOnNumDerivs) {
-            LogController.logs("Early stopped: number of derivations exceeded at depth = %d", depth);
+            NLULoggerController.logs("Early stopped: number of derivations exceeded at depth = %d", depth);
             return;
           }
         }
@@ -553,14 +553,14 @@ class FloatingParserState extends ParserState {
         parsingThread.join(FloatingParser.opts.maxFloatingParsingTime * 1000);
         if (parsingThread.isAlive()) {
           // This will only interrupt first or second passes, not the final candidate collection.
-          LogController.warnings("Parsing time exceeded %d seconds. Will now interrupt ...", FloatingParser.opts.maxFloatingParsingTime);
+          NLULoggerController.warnings("Parsing time exceeded %d seconds. Will now interrupt ...", FloatingParser.opts.maxFloatingParsingTime);
           timeout = true;
           parsingThread.interrupt();
           parsingThread.join();
         }
       } catch (InterruptedException e) {
         e.printStackTrace();
-        LogController.fails("FloatingParser error: %s", e);
+        NLULoggerController.fails("FloatingParser error: %s", e);
       }
     }
     evaluation.add("timeout", timeout);
@@ -571,7 +571,7 @@ class FloatingParserState extends ParserState {
   // ============================================================
 
   @Override public void infer() {
-    LogController.begin_track_printAll("FloatingParser.infer()");
+    NLULoggerController.begin_track_printAll("FloatingParser.infer()");
     ruleTime = new HashMap<>();
 
     buildDerivations();
@@ -594,10 +594,10 @@ class FloatingParserState extends ParserState {
 
     // Example summary
     if (Parser.opts.verbose >= 2) {
-      LogController.begin_track_printAll("Summary of Example %s", ex.getUtterance());
+      NLULoggerController.begin_track_printAll("Summary of Example %s", ex.getUtterance());
       for (Derivation deriv : predDerivations)
-        LogController.logs("Generated: canonicalUtterance=%s, value=%s", deriv.canonicalUtterance, deriv.value);
-      LogController.end_track();
+        NLULoggerController.logs("Generated: canonicalUtterance=%s, value=%s", deriv.canonicalUtterance, deriv.value);
+      NLULoggerController.end_track();
     }
 
     if (FloatingParser.opts.printPredictedUtterances) {
@@ -614,7 +614,7 @@ class FloatingParserState extends ParserState {
       fWriter.close();
     }
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Override
@@ -630,7 +630,7 @@ class FloatingParserState extends ParserState {
         for (int i = 0; i + len <= numTokens; ++i) {
           List<Derivation> derivations = getDerivations(anchoredCell(cat, i, i + len));
           for (Derivation deriv : derivations) {
-            LogController.logs("ParserState.visualize: %s(%s:%s): %s", cat, i, i + len, deriv);
+            NLULoggerController.logs("ParserState.visualize: %s(%s:%s): %s", cat, i, i + len, deriv);
           }
         }
       }
@@ -640,10 +640,10 @@ class FloatingParserState extends ParserState {
   private void summarizeRuleTime() {
     List<Map.Entry<Rule, Long>> entries = new ArrayList<>(ruleTime.entrySet());
     entries.sort(new ValueComparator<>(true));
-    LogController.begin_track_printAll("Rule time");
+    NLULoggerController.begin_track_printAll("Rule time");
     for (Map.Entry<Rule, Long> entry : entries) {
-      LogController.logs("%9d : %s", entry.getValue(), entry.getKey());
+      NLULoggerController.logs("%9d : %s", entry.getValue(), entry.getKey());
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 }

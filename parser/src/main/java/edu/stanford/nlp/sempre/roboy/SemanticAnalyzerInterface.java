@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 
 import edu.stanford.nlp.sempre.*;
 import java.util.*;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
 /**
  * @brief SemanticAnalyserInterface

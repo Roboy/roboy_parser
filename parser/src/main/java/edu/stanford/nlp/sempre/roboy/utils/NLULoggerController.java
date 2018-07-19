@@ -4,7 +4,7 @@ import fig.basic.LogInfo;
 
 import java.io.PrintWriter;
 
-public class LogController extends LogInfo {
+public class NLULoggerController extends LogInfo {
 
     private static boolean ALL = true;
     private static boolean WARN = true;
@@ -37,7 +37,7 @@ public class LogController extends LogInfo {
     }
 
     public static void setWARN(boolean WARN) {
-        LogController.WARN = WARN;
+        NLULoggerController.WARN = WARN;
     }
 
     public static boolean isALL() {
@@ -45,7 +45,7 @@ public class LogController extends LogInfo {
     }
 
     public static void setALL(boolean ALL) {
-        LogController.ALL = ALL;
+        NLULoggerController.ALL = ALL;
     }
 
 

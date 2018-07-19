@@ -28,15 +28,13 @@ import edu.stanford.nlp.sempre.ParserState;
 import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.SemanticFn;
 import edu.stanford.nlp.sempre.Trie;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
-import fig.basic.Evaluation;
 import fig.basic.IOUtils;
 import fig.basic.IntRef;
 import fig.basic.Option;
 import fig.basic.SetUtils;
 import fig.basic.StopWatch;
-import fig.basic.StopWatchSet;
 import fig.exec.Execution;
 
 /**
@@ -68,7 +66,7 @@ public class InteractiveBeamParser extends Parser {
     super(spec);
     if (opts.trackedCats != null) {
       opts.trackedCats = opts.trackedCats.stream().map(s -> "$" + s).collect(Collectors.toList());
-      LogController.logs("Mapped trackedCats to: %s", opts.trackedCats);
+      NLULoggerController.logs("Mapped trackedCats to: %s", opts.trackedCats);
     }
     interactiveCatUnaryRules = new LinkedList<>(super.catUnaryRules);
     allRules = new LinkedHashSet<>(super.catUnaryRules);
@@ -121,12 +119,12 @@ public class InteractiveBeamParser extends Parser {
   public ParserState newParserState(Params params, Example ex, boolean computeExpectedCounts) {
     InteractiveBeamParserState coarseState = null;
     if (Parser.opts.coarsePrune) {
-      LogController.begin_track("Parser.coarsePrune");
+      NLULoggerController.begin_track("Parser.coarsePrune");
       coarseState = new InteractiveBeamParserState(this, params, ex, computeExpectedCounts,
               InteractiveBeamParserState.Mode.bool, null);
       coarseState.infer();
       coarseState.keepTopDownReachable();
-      LogController.end_track();
+      NLULoggerController.end_track();
     }
     return new InteractiveBeamParserState(this, params, ex, computeExpectedCounts, InteractiveBeamParserState.Mode.full,
             coarseState);
@@ -184,7 +182,7 @@ class InteractiveBeamParserState extends ChartParserState {
       return;
 
     if (parser.verbose(2))
-      LogController.begin_track("ParserState.infer");
+      NLULoggerController.begin_track("ParserState.infer");
 
     // Base case
     for (Derivation deriv : gatherTokenAndPhraseDerivations()) {
@@ -198,7 +196,7 @@ class InteractiveBeamParserState extends ChartParserState {
         build(i, i + len);
 
     if (parser.verbose(2))
-      LogController.end_track();
+      NLULoggerController.end_track();
 
     // Visualize
     if (parser.chartFillOut != null && Parser.opts.visualizeChartFilling && this.mode != Mode.bool) {
@@ -307,7 +305,7 @@ class InteractiveBeamParserState extends ChartParserState {
   // Return number of new derivations added
   private int applyRule(int start, int end, Rule rule, List<Derivation> children) {
     if (Parser.opts.verbose >= 5)
-      LogController.logs("applyRule %s %s %s %s", start, end, rule, children);
+      NLULoggerController.logs("applyRule %s %s %s %s", start, end, rule, children);
     try {
       if (mode == Mode.full) {
         StopWatchSetController.begin(rule.getSemRepn());
@@ -329,7 +327,7 @@ class InteractiveBeamParserState extends ChartParserState {
         throw new RuntimeException("Invalid mode");
       }
     } catch (Exception e) {
-      LogController.errors("Composition failed: rule = %s, children = %s", rule, children);
+      NLULoggerController.errors("Composition failed: rule = %s, children = %s", rule, children);
       e.printStackTrace();
       throw new RuntimeException(e);
     }
@@ -359,7 +357,7 @@ class InteractiveBeamParserState extends ChartParserState {
       String rhsCat = rule.rhs.get(0);
       List<Derivation> derivations = chart[start][end].get(rhsCat);
       if (Parser.opts.verbose >= 5)
-        LogController.logs("applyCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
+        NLULoggerController.logs("applyCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
       if (derivations == null)
         continue;
 
@@ -387,7 +385,7 @@ class InteractiveBeamParserState extends ChartParserState {
       return;
 
     if (Parser.opts.verbose >= 5) {
-      LogController.logs("applyNonCatUnaryRules(start=%d, end=%d, i=%d, children=[%s], %s rules)", start, end, i,
+      NLULoggerController.logs("applyNonCatUnaryRules(start=%d, end=%d, i=%d, children=[%s], %s rules)", start, end, i,
               Joiner.on(", ").join(children), node.rules.size());
     }
 
@@ -538,7 +536,7 @@ class InteractiveBeamParserState extends ChartParserState {
         Collections.sort(toRemoveCats);
         for (String cat : toRemoveCats) {
           if (parser.verbose(4)) {
-            LogController.logs("Pruning chart %s(%s,%s)", cat, start, end);
+            NLULoggerController.logs("Pruning chart %s(%s,%s)", cat, start, end);
           }
           chart[start][end].remove(cat);
         }

@@ -4,7 +4,7 @@ import fig.basic.*;
 
 public class EvaluationController extends Evaluation{
     public void logStats(String prefix) {
-        if(LogController.isALL())super.logStats(prefix);
+        if(NLULoggerController.isALL())super.logStats(prefix);
     }
 
 }

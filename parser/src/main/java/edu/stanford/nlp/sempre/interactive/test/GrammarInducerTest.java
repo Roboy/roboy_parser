@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import org.testng.annotations.Test;
 import org.testng.asserts.Assertion;
 import org.testng.asserts.SoftAssert;
@@ -104,7 +104,7 @@ public class GrammarInducerTest {
       List<Rule> induced = InteractiveMaster.induceRulesHelper(":def", head, def, parser, params,
               new Session("testsession"), null);
       allRules.addAll(induced);
-      LogController.logs("Defining %s := %s, added %s", head, def, induced);
+      NLULoggerController.logs("Defining %s := %s, added %s", head, def, induced);
       induced.forEach(r -> InteractiveUtils.addRuleInteractive(r, parser));
     }
 
@@ -123,24 +123,24 @@ public class GrammarInducerTest {
       int ind = 0;
       for (Derivation d : exHead.predDerivations) {
         // LogController.logs("considering: %s", d.formula.toString());
-        LogController.logs("Comparing %s vs %s", InteractiveUtils.stripBlock(d).formula.toString(),
+        NLULoggerController.logs("Comparing %s vs %s", InteractiveUtils.stripBlock(d).formula.toString(),
                 InteractiveUtils.stripBlock(defDeriv).formula.toString());
         if (InteractiveUtils.stripBlock(d).formula.toString()
                 .equals(InteractiveUtils.stripBlock(defDeriv).formula.toString())) {
           found = true;
-          LogController.logs("found %s at %d", d.formula, ind);
+          NLULoggerController.logs("found %s at %d", d.formula, ind);
         }
         ind++;
       }
       printAllRules();
       if (!found) {
-        LogController.logs("Did not find %s among \n %s", defDeriv.formula, exHead.predDerivations);
+        NLULoggerController.logs("Did not find %s among \n %s", defDeriv.formula, exHead.predDerivations);
       }
       return found;
     }
 
     public void accept(String head, String def) {
-      LogController.begin_track("Accepting");
+      NLULoggerController.begin_track("Accepting");
       Example.Builder b = new Example.Builder();
       b.setUtterance(head);
       Example exHead = b.createExample();
@@ -154,28 +154,28 @@ public class GrammarInducerTest {
       for (Derivation deriv : exHead.predDerivations) {
         deriv.compatibility = defDeriv.formula.equals(deriv.formula) ? 1 : 0;
       }
-      exHead.predDerivations.forEach(d -> LogController.logs("Compatibility %s : %f", d.formula, d.compatibility));
+      exHead.predDerivations.forEach(d -> NLULoggerController.logs("Compatibility %s : %f", d.formula, d.compatibility));
 
       HashMap<String, Double> counts = new HashMap<>();
       ParserState.computeExpectedCounts(exHead.predDerivations, counts);
-      LogController.logs("Gradients: %s", counts);
+      NLULoggerController.logs("Gradients: %s", counts);
       // LogController.logs("paramsbefore: %s", params.getWeights());
       params.update(counts);
       // LogController.logs("paramsafter: %s", params.getWeights());
-      LogController.end_track();
+      NLULoggerController.end_track();
     }
 
     public void printAllRules() {
-      LogController.begin_track("Rules induced");
-      allRules.forEach(r -> LogController.log(r));
-      LogController.end_track();
+      NLULoggerController.begin_track("Rules induced");
+      allRules.forEach(r -> NLULoggerController.log(r));
+      NLULoggerController.end_track();
     }
   }
 
   // tests simple substitutions
   @Test(groups = { "Interactive" })
   public void simpleTest() {
-    LogController.begin_track("simpleTest");
+    NLULoggerController.begin_track("simpleTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -212,12 +212,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void actionTest() {
-    LogController.begin_track("actionTest");
+    NLULoggerController.begin_track("actionTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -236,12 +236,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void notActionTest() {
-    LogController.begin_track("notActionTest");
+    NLULoggerController.begin_track("notActionTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -255,12 +255,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void learnCatTest() {
-    LogController.begin_track("test the learning via alignment");
+    NLULoggerController.begin_track("test the learning via alignment");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -289,12 +289,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void cubeTest() {
-    LogController.begin_track("cubeTest");
+    NLULoggerController.begin_track("cubeTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -309,12 +309,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void rectTest() {
-    LogController.begin_track("rectTest");
+    NLULoggerController.begin_track("rectTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -328,12 +328,12 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   @Test(groups = { "Interactive" })
   public void setsTest() {
-    LogController.begin_track("setsTest");
+    NLULoggerController.begin_track("setsTest");
     ParseTester T = new ParseTester();
     Assertion A = hard;
 
@@ -346,7 +346,7 @@ public class GrammarInducerTest {
     // T.printAllRules();
     // A.assertAll();
 
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
 }

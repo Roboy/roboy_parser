@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre.test;
 
 import edu.stanford.nlp.sempre.*;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import org.testng.annotations.Test;
 
 /**
@@ -50,11 +50,11 @@ public class JsonTest {
       .setUtterance("A is for Alice")
       .setTargetValue(new StringValue("B is for Bob"))
       .createExample();
-    LogController.log(S(ex));
+    NLULoggerController.log(S(ex));
     assert exampleEquals(ex, D(S(ex), Example.class));
 
     ex.preprocess();
-    LogController.log(S(ex));
+    NLULoggerController.log(S(ex));
     assert ex.languageInfo != null;
     assert !ex.languageInfo.tokens.isEmpty();
     assert exampleEquals(ex, D(S(ex), Example.class));
@@ -65,8 +65,8 @@ public class JsonTest {
     String there = S(ex);
     Example back = D(there, Example.class);
     String thereAgain = S(back);
-    LogController.log(there);
-    LogController.log(thereAgain);
+    NLULoggerController.log(there);
+    NLULoggerController.log(thereAgain);
     assert there.equals(thereAgain);
     assert exampleEquals(ex, back);
   }

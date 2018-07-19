@@ -1,6 +1,6 @@
 package edu.stanford.nlp.sempre.freebase.utils;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Option;
 
 import edu.stanford.nlp.sempre.freebase.utils.WordNet.*;
@@ -60,7 +60,7 @@ public class WnExpander {
     Set<String> expansions = synsetsToPhrases(phraseSynsets);
     if (opts.verbose > 0) {
       for (String expansion : expansions)
-        LogController.logs("WordNetExpansionLexicon: expanding %s to %s", phrase, expansion);
+        NLULoggerController.logs("WordNetExpansionLexicon: expanding %s to %s", phrase, expansion);
     }
     return expansions;
   }

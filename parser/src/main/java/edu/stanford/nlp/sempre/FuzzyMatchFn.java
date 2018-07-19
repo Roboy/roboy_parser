@@ -2,7 +2,8 @@ package edu.stanford.nlp.sempre;
 
 import java.util.*;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
+import fig.basic.*;
 
 /**
  * Similar to SimpleLexiconFn, but list all approximate matches from a FuzzyMatchable instance.
@@ -81,7 +82,7 @@ public class FuzzyMatchFn extends SemanticFn {
       this.mode = mode;
       this.matchAny = matchAny;
       if (opts.verbose >= 2)
-        LogController.logs("FuzzyMatchFn[%s]%s.call: %s",
+        NLULoggerController.logs("FuzzyMatchFn[%s]%s.call: %s",
             this.mode, (this.matchAny ? "[matchAny]" : ""), this.query);
     }
 

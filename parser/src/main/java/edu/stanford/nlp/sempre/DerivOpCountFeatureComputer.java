@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.google.common.collect.Sets;
 
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
 /**
  * Extracts indicator features that count how many times semantic functions and

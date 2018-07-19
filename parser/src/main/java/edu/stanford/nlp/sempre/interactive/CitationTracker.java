@@ -17,9 +17,8 @@ import edu.stanford.nlp.sempre.Derivation;
 import edu.stanford.nlp.sempre.Example;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.Rule;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.IOUtils;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
 /**
  * Tracks rule usage via a citation system. A rule is cited when a user makes
@@ -113,7 +112,7 @@ public class CitationTracker {
 
   public void citeAll(Derivation deriv) {
     if (deriv.rule != null && deriv.rule.isInduced()) {
-      LogController.logs("CitationTracker: user %s is citing rule: %s", this.uid, deriv.rule.toString());
+      NLULoggerController.logs("CitationTracker: user %s is citing rule: %s", this.uid, deriv.rule.toString());
       citeRule(deriv.rule);
     }
 

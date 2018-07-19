@@ -17,13 +17,12 @@ import edu.stanford.nlp.sempre.Formulas;
 import edu.stanford.nlp.sempre.Master;
 import edu.stanford.nlp.sempre.Params;
 import edu.stanford.nlp.sempre.Parser;
-import edu.stanford.nlp.sempre.ParserState;
 import edu.stanford.nlp.sempre.Rule;
 import edu.stanford.nlp.sempre.RuleSource;
 import edu.stanford.nlp.sempre.Session;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.IOUtils;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.Option;
 import fig.basic.Ref;
 
@@ -63,13 +62,13 @@ public class InteractiveMaster extends Master {
   @Override
   protected void printHelp() {
     // interactive commands
-    LogController.log("Interactive commands");
-    LogController.log(
+    NLULoggerController.log("Interactive commands");
+    NLULoggerController.log(
         "  (:def head [[body1,bodyformula1],[body2,bodyformula2]]): provide a definition for the original utterance");
-    LogController.log("  (:q |utterance|): provide a definition for the original utterance");
-    LogController.log("  (:accept |formula1| |formula2|): accept any derivation with those corresponding formula");
-    LogController.log("  (:reject |formula1| |formula2|): reject any derivations with those corresponding formula");
-    LogController.log("Main commands:");
+    NLULoggerController.log("  (:q |utterance|): provide a definition for the original utterance");
+    NLULoggerController.log("  (:accept |formula1| |formula2|): accept any derivation with those corresponding formula");
+    NLULoggerController.log("  (:reject |formula1| |formula2|): reject any derivations with those corresponding formula");
+    NLULoggerController.log("Main commands:");
     super.printHelp();
   }
 
@@ -81,9 +80,9 @@ public class InteractiveMaster extends Master {
 
   @Override
   public Response processQuery(Session session, String line) {
-    LogController.begin_track("InteractiveMaster.handleQuery");
-    LogController.logs("session %s", session.id);
-    LogController.logs("query %s", line);
+    NLULoggerController.begin_track("InteractiveMaster.handleQuery");
+    NLULoggerController.logs("session %s", session.id);
+    NLULoggerController.logs("query %s", line);
     line = line.trim();
     Response response = new Response();
     if (line.startsWith("(:"))
@@ -92,7 +91,7 @@ public class InteractiveMaster extends Master {
       super.processQuery(session, line);
     else
       handleCommand(session, String.format("(:q \"%s\")", line), response);
-    LogController.end_track();
+    NLULoggerController.end_track();
     return response;
   }
 
@@ -119,7 +118,7 @@ public class InteractiveMaster extends Master {
       stats.size(ex.predDerivations != null ? ex.predDerivations.size() : 0);
       stats.status(InteractiveUtils.getParseStatus(ex));
 
-      LogController.logs("parse stats: %s", response.stats);
+      NLULoggerController.logs("parse stats: %s", response.stats);
       response.ex = ex;
     } else if (command.equals(":qdbg")) {
       // Create example
@@ -183,9 +182,9 @@ public class InteractiveMaster extends Master {
         // ex.setTargetValue(match.value); // this is just for logging, not
         // actually used for learning
         if (session.isLearning()) {
-          LogController.begin_track("Updating parameters");
+          NLULoggerController.begin_track("Updating parameters");
           learner.onlineLearnExampleByFormula(ex, targetFormulas);
-          LogController.end_track();
+          NLULoggerController.end_track();
         }
       }
     } else if (command.startsWith(":def")) {
@@ -228,13 +227,13 @@ public class InteractiveMaster extends Master {
             out.close();
           }
         } else {
-          LogController.logs("No rule induced for head %s", head);
+          NLULoggerController.logs("No rule induced for head %s", head);
         }
       } else {
-        LogController.logs("Invalid format for def");
+        NLULoggerController.logs("Invalid format for def");
       }
     } else if (command.equals(":printInfo")) {
-      LogController.logs("Printing and overriding grammar and parameters...");
+      NLULoggerController.logs("Printing and overriding grammar and parameters...");
       builder.params.write(Paths.get(InteractiveMaster.opts.intOutputPath, "params.params").toString());
       PrintWriter out = IOUtils
           .openOutAppendHard(Paths.get(InteractiveMaster.opts.intOutputPath + "grammar.final.json").toString());
@@ -242,10 +241,10 @@ public class InteractiveMaster extends Master {
         out.println(rule.toJson());
       }
       out.close();
-      LogController.logs("Done printing and overriding grammar and parameters...");
+      NLULoggerController.logs("Done printing and overriding grammar and parameters...");
     } else if (command.equals(":context")) {
       if (tree.children.size() == 1) {
-        LogController.logs("%s", session.context);
+        NLULoggerController.logs("%s", session.context);
       } else {
         session.context = ContextValue
             .fromString(String.format("(context (graph NaiveKnowledgeGraph ((string \"%s\") (name b) (name c))))",
@@ -253,7 +252,7 @@ public class InteractiveMaster extends Master {
         response.stats.put("context_length", tree.children.get(1).toString().length());
       }
     } else {
-      LogController.log("Invalid command: " + tree);
+      NLULoggerController.log("Invalid command: " + tree);
     }
   }
 
@@ -270,7 +269,7 @@ public class InteractiveMaster extends Master {
   public static List<Rule> induceRulesHelper(String command, String head, String jsonDef, Parser parser, Params params,
       Session session, Ref<Response> refResponse) throws BadInteractionException {
     Example exHead = exampleFromUtterance(head, session);
-    LogController.logs("head: %s", exHead.getTokens());
+    NLULoggerController.logs("head: %s", exHead.getTokens());
 
     if (exHead.getTokens() == null || exHead.getTokens().size() == 0)
       throw BadInteractionException.headIsEmpty(head);
@@ -282,9 +281,9 @@ public class InteractiveMaster extends Master {
     if (GrammarInducer.getParseStatus(exHead) == GrammarInducer.ParseStatus.Core)
       throw BadInteractionException.headIsCore(head);
 
-    LogController.logs("num anchored: %d", state.chartList.size());
+    NLULoggerController.logs("num anchored: %d", state.chartList.size());
     List<String> bodyList = InteractiveUtils.utterancefromJson(jsonDef, false);
-    LogController.logs("bodyutterances:\n %s", String.join("\t", bodyList));
+    NLULoggerController.logs("bodyutterances:\n %s", String.join("\t", bodyList));
 
     Derivation bodyDeriv = InteractiveUtils
         .combine(InteractiveUtils.derivsfromJson(jsonDef, parser, params, refResponse));

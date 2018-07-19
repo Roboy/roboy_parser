@@ -1,10 +1,9 @@
 package edu.stanford.nlp.sempre;
 
 import com.google.common.collect.Sets;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import edu.stanford.nlp.sempre.roboy.utils.StopWatchSetController;
 import fig.basic.MapUtils;
-import fig.basic.StopWatchSet;
 
 import java.util.*;
 
@@ -60,7 +59,7 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
 
   private void expandDerivRightwards(Derivation leftChild) {
     if (parser.verbose(6))
-      LogController.begin_track("Expanding rightward");
+      NLULoggerController.begin_track("Expanding rightward");
     Map<String, List<Rule>> rhsCategoriesToRules = parser.leftToRightSiblingMap.get(leftChild.cat);
     if (rhsCategoriesToRules != null) {
       for (int i = 1; leftChild.end + i <= numTokens; ++i) {
@@ -77,12 +76,12 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
         handleTerminalExpansion(leftChild, false, rhsCategoriesToRules);
     }
     if (parser.verbose(6))
-      LogController.end_track();
+      NLULoggerController.end_track();
   }
 
   private void expandDerivLeftwards(Derivation rightChild) {
     if (parser.verbose(5))
-      LogController.begin_track("Expanding leftward");
+      NLULoggerController.begin_track("Expanding leftward");
     Map<String, List<Rule>> lhsCategorisToRules = parser.rightToLeftSiblingMap.get(rightChild.cat);
     if (lhsCategorisToRules != null) {
       for (int i = 1; rightChild.start - i >= 0; ++i) {
@@ -99,7 +98,7 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
         handleTerminalExpansion(rightChild, true, lhsCategorisToRules);
     }
     if (parser.verbose(5))
-      LogController.end_track();
+      NLULoggerController.end_track();
   }
 
   private void generateParentDerivations(Derivation expandedDeriv, List<Derivation> otherDerivs,
@@ -133,7 +132,7 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
   private DerivationStream applyRule(int start, int end, Rule rule, List<Derivation> children) {
     try {
       if (Parser.opts.verbose >= 5)
-        LogController.logs("applyRule %s %s %s %s", start, end, rule, children);
+        NLULoggerController.logs("applyRule %s %s %s %s", start, end, rule, children);
       StopWatchSetController.begin(rule.getSemRepn()); // measuring time
       StopWatchSetController.begin(rule.toString());
       DerivationStream results = rule.sem.call(ex,
@@ -142,7 +141,7 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
       StopWatchSetController.end();
       return results;
     } catch (Exception e) {
-      LogController.errors("Composition failed: rule = %s, children = %s", rule, children);
+      NLULoggerController.errors("Composition failed: rule = %s, children = %s", rule, children);
       e.printStackTrace();
       throw new RuntimeException(e);
     }
@@ -150,7 +149,7 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
 
   private void applyCatUnaryRules(Derivation deriv) {
     if (parser.verbose(4))
-      LogController.begin_track("Category unary rules");
+      NLULoggerController.begin_track("Category unary rules");
     for (Rule rule : parser.catUnaryRules) {
       if (!coarseAllows(rule.lhs, deriv.start, deriv.end))
         continue;
@@ -160,7 +159,7 @@ abstract class AbstractReinforcementParserState extends ChartParserState {
       }
     }
     if (parser.verbose(4))
-      LogController.end_track();
+      NLULoggerController.end_track();
   }
 
   public List<DerivationStream> gatherRhsTerminalsDerivations() {

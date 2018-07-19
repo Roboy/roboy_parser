@@ -7,10 +7,8 @@ import edu.stanford.nlp.sempre.roboy.DbFormulasInfo.BinaryFormulaInfo;
 import edu.stanford.nlp.sempre.roboy.DbFormulasInfo.UnaryFormulaInfo;
 import edu.stanford.nlp.sempre.*;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.Properties;
 import java.io.FileReader;

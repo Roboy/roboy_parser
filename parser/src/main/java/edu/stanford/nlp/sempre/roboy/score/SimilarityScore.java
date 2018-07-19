@@ -5,7 +5,7 @@ import edu.stanford.nlp.sempre.ContextValue;
 import edu.stanford.nlp.sempre.roboy.UnderspecifiedInfo;
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
 import edu.stanford.nlp.sempre.roboy.lexicons.word2vec.Word2vec;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class SimilarityScore extends ScoringFunction {
                 score = 1;
             result.candidatesScores.add(score*this.weight);
             if (ConfigManager.DEBUG > 4)
-                LogController.logs("Similarity: %s -> %s", candidate.get("URI"), score);
+                NLULoggerController.logs("Similarity: %s -> %s", candidate.get("URI"), score);
         }
         return result;
     }

@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Evaluation;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -271,41 +269,41 @@ public class Example {
   }
 
   public void log() {
-    LogController.begin_track("Example: %s", utterance);
-    LogController.logs("Tokens: %s", getTokens());
-    LogController.logs("Lemmatized tokens: %s", getLemmaTokens());
-    LogController.logs("POS tags: %s", languageInfo.posTags);
-    LogController.logs("NER tags: %s", languageInfo.nerTags);
-    LogController.logs("NER values: %s", languageInfo.nerValues);
+    NLULoggerController.begin_track("Example: %s", utterance);
+    NLULoggerController.logs("Tokens: %s", getTokens());
+    NLULoggerController.logs("Lemmatized tokens: %s", getLemmaTokens());
+    NLULoggerController.logs("POS tags: %s", languageInfo.posTags);
+    NLULoggerController.logs("NER tags: %s", languageInfo.nerTags);
+    NLULoggerController.logs("NER values: %s", languageInfo.nerValues);
     if (context != null)
-      LogController.logs("context: %s", context);
+      NLULoggerController.logs("context: %s", context);
     if (targetFormula != null)
-      LogController.logs("targetFormula: %s", targetFormula);
+      NLULoggerController.logs("targetFormula: %s", targetFormula);
     if (targetValue != null)
-      LogController.logs("targetValue: %s", targetValue);
-    LogController.logs("Sentiment: %s", genInfo.sentiment);
-    LogController.logs("Keywords: %s", genInfo.keywords.toString());
-    LogController.logs("Dependency children: %s", languageInfo.dependencyChildren);
-    LogController.logs("Extracted relations: %s", relationInfo.relations.toString());
-    LogController.end_track();
+      NLULoggerController.logs("targetValue: %s", targetValue);
+    NLULoggerController.logs("Sentiment: %s", genInfo.sentiment);
+    NLULoggerController.logs("Keywords: %s", genInfo.keywords.toString());
+    NLULoggerController.logs("Dependency children: %s", languageInfo.dependencyChildren);
+    NLULoggerController.logs("Extracted relations: %s", relationInfo.relations.toString());
+    NLULoggerController.end_track();
   }
 
   public void logWithoutContext() {
-    LogController.begin_track("Example: %s", utterance);
-    LogController.logs("Tokens: %s", getTokens());
-    LogController.logs("Lemmatized tokens: %s", getLemmaTokens());
-    LogController.logs("POS tags: %s", languageInfo.posTags);
-    LogController.logs("NER tags: %s", languageInfo.nerTags);
-    LogController.logs("NER values: %s", languageInfo.nerValues);
+    NLULoggerController.begin_track("Example: %s", utterance);
+    NLULoggerController.logs("Tokens: %s", getTokens());
+    NLULoggerController.logs("Lemmatized tokens: %s", getLemmaTokens());
+    NLULoggerController.logs("POS tags: %s", languageInfo.posTags);
+    NLULoggerController.logs("NER tags: %s", languageInfo.nerTags);
+    NLULoggerController.logs("NER values: %s", languageInfo.nerValues);
     if (targetFormula != null)
-      LogController.logs("targetFormula: %s", targetFormula);
+      NLULoggerController.logs("targetFormula: %s", targetFormula);
     if (targetValue != null)
-      LogController.logs("targetValue: %s", targetValue);
-    LogController.logs("Sentiment: %s", genInfo.sentiment);
-    LogController.logs("Keywords: %s", genInfo.keywords.toString());
-    LogController.logs("Dependency children: %s", languageInfo.dependencyChildren);
-    LogController.logs("Extracted relations: %s", relationInfo.relations.toString());
-    LogController.end_track();
+      NLULoggerController.logs("targetValue: %s", targetValue);
+    NLULoggerController.logs("Sentiment: %s", genInfo.sentiment);
+    NLULoggerController.logs("Keywords: %s", genInfo.keywords.toString());
+    NLULoggerController.logs("Dependency children: %s", languageInfo.dependencyChildren);
+    NLULoggerController.logs("Extracted relations: %s", relationInfo.relations.toString());
+    NLULoggerController.end_track();
   }
 
   public List<Derivation> getCorrectDerivations() {

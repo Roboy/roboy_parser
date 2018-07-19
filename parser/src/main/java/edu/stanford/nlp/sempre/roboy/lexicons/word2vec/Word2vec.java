@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre.roboy.lexicons.word2vec;
 
 import edu.stanford.nlp.sempre.roboy.config.ConfigManager;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import org.deeplearning4j.models.embeddings.WeightLookupTable;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
@@ -45,11 +45,11 @@ public class Word2vec {
         this.weightLookupTable = this.vec.lookupTable();
         this.vectors = weightLookupTable.vectors();
 
-        LogController.begin_track("Tests -> ");
-        LogController.logs("Closest words: %s", this.getClosest("queen",10));
-        LogController.logs("Closest word to female from : \"women\",\"queen\",\"elisabeth\" -> %s", this.getBest("female", Arrays.asList("women","queen","elisabeth")));
-        LogController.logs("Closest word to swimming from : \"literature\",\"activity\",\"sports\" -> : %s",this.getBest("swimming", Arrays.asList("literature","activity","sports")));
-        LogController.end_track();
+        NLULoggerController.begin_track("Tests -> ");
+        NLULoggerController.logs("Closest words: %s", this.getClosest("queen",10));
+        NLULoggerController.logs("Closest word to female from : \"women\",\"queen\",\"elisabeth\" -> %s", this.getBest("female", Arrays.asList("women","queen","elisabeth")));
+        NLULoggerController.logs("Closest word to swimming from : \"literature\",\"activity\",\"sports\" -> : %s",this.getBest("swimming", Arrays.asList("literature","activity","sports")));
+        NLULoggerController.end_track();
     }
 
     public void setThreshold(double t){
@@ -86,19 +86,19 @@ public class Word2vec {
         try{
             Word2vec vec = new Word2vec();
             if (ConfigManager.DEBUG > 3) {
-                LogController.logs("Tests -> ");
+                NLULoggerController.logs("Tests -> ");
                 vec.setThreshold(0);
-                LogController.logs("Closest words: %s", vec.getClosest("queen", 10).toString());
-                LogController.logs("Closest word to queen from : " +
+                NLULoggerController.logs("Closest words: %s", vec.getClosest("queen", 10).toString());
+                NLULoggerController.logs("Closest word to queen from : " +
                         "\"people\",\"activities\",\"politics\",\"culture\" -> %s",
                         vec.getBest("queen",
                                 Arrays.asList("people", "activities", "politics", "culture")).toString());
-                LogController.logs("Closest word to swimming from : \"literature\",\"music\",\"sports\" -> : %s",
+                NLULoggerController.logs("Closest word to swimming from : \"literature\",\"music\",\"sports\" -> : %s",
                         vec.getBest("swimming",
                                 Arrays.asList("literature", "music", "sports")).toString());
             }
         } catch(Exception e){
-            LogController.errors("Exception in Word2Vec: %s", e.getMessage());
+            NLULoggerController.errors("Exception in Word2Vec: %s", e.getMessage());
         }
 
     }

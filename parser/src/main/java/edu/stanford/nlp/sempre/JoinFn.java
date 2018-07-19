@@ -1,7 +1,7 @@
 package edu.stanford.nlp.sempre;
 
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.Option;
 
 
@@ -197,7 +197,7 @@ public class JoinFn extends SemanticFn {
       SemType type = opts.specializedTypeCheck ? specializedTypeCheck(binaryType, unaryType) : binaryType.apply(unaryType);
       if (!type.isValid()) {
         if (opts.showTypeCheckFailures)
-          LogController.warnings("JoinFn: type check failed: [%s : %s] JOIN [%s : %s]",
+          NLULoggerController.warnings("JoinFn: type check failed: [%s : %s] JOIN [%s : %s]",
               binaryFormula, binaryType,
               unaryFormula, unaryType);
         return null;
@@ -216,13 +216,13 @@ public class JoinFn extends SemanticFn {
       if (opts.typeInference) {
         SemType fullType = TypeInference.inferType(f);
         if (opts.verbose >= 2)
-          LogController.logs("JoinFn.typeInference: %s => %s [coarse type = %s]", f, fullType, type);
+          NLULoggerController.logs("JoinFn.typeInference: %s => %s [coarse type = %s]", f, fullType, type);
         if (!fullType.isValid()) return null;  // Rule out logical form
         type = fullType;  // Use the more specific type
       }
 
       if (opts.verbose >= 3) {
-        LogController.logs(
+        NLULoggerController.logs(
                 "JoinFn: binary: %s [%s], unary: %s [%s], result: %s [%s]",
                 binaryFormula, binaryType, unaryFormula, unaryType, f, type);
       }

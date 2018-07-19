@@ -2,7 +2,7 @@ package edu.stanford.nlp.sempre.freebase;
 
 import java.util.*;
 import com.google.common.collect.Lists;
-import fig.basic.*;import edu.stanford.nlp.sempre.roboy.utils.LogController;
+import fig.basic.*;
 import edu.stanford.nlp.sempre.*;
 
 /**

@@ -25,8 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
-import org.testng.collections.Lists;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 
 import edu.stanford.nlp.sempre.Json;
 import fig.basic.Option;
@@ -109,7 +108,7 @@ public class Simulator implements Runnable {
           stream = Files.lines(Paths.get(fileName));
 
         List<String> lines = stream.collect(Collectors.toList());
-        LogController.logs("Reading %s (%d lines)", fileName, lines.size());
+        NLULoggerController.logs("Reading %s (%d lines)", fileName, lines.size());
         int numLinesRead = 0;
         // ExecutorService executor = new ThreadPoolExecutor(numThreads,
         // numThreads,
@@ -121,7 +120,7 @@ public class Simulator implements Runnable {
           numLinesRead++;
           if (numLinesRead > maxQueries)
             break;
-          LogController.logs("Line %d", numLinesRead);
+          NLULoggerController.logs("Line %d", numLinesRead);
           if (!useThreads) {
             executeLine(l);
           } else {
@@ -133,7 +132,7 @@ public class Simulator implements Runnable {
             } finally {
               future.cancel(true); // may or may not desire this
               long endTime = System.nanoTime();
-              LogController.logs("Took %d ns or %.4f s", (endTime - startTime), (endTime - startTime) / 1.0e9);
+              NLULoggerController.logs("Took %d ns or %.4f s", (endTime - startTime), (endTime - startTime) / 1.0e9);
             }
           }
         }
@@ -150,7 +149,7 @@ public class Simulator implements Runnable {
     try {
       json = Json.readMapHard(l);
     } catch (RuntimeException e) {
-      LogController.logs("Json cannot be read from %s: %s", l, e.toString());
+      NLULoggerController.logs("Json cannot be read from %s: %s", l, e.toString());
       return;
     }
     Object command = json.get("q");
@@ -232,7 +231,7 @@ public class Simulator implements Runnable {
 
   @Override
   public void run() {
-    LogController.logs("setting numThreads %d", numThreads);
+    NLULoggerController.logs("setting numThreads %d", numThreads);
     readQueries();
   }
 }

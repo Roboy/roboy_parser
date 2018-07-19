@@ -4,11 +4,9 @@ import edu.stanford.nlp.sempre.ErrorValue;
 import edu.stanford.nlp.sempre.roboy.DatabaseInfo;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

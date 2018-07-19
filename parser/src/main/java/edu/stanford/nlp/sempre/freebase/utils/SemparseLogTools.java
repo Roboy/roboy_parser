@@ -1,8 +1,8 @@
 package edu.stanford.nlp.sempre.freebase.utils;
 
 import edu.stanford.nlp.io.IOUtils;
+import edu.stanford.nlp.sempre.roboy.utils.NLULoggerController;
 import fig.basic.LispTree;
-import edu.stanford.nlp.sempre.roboy.utils.LogController;
 import fig.basic.MapUtils;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public final class SemparseLogTools {
 
   public static void main(String[] args) throws IOException {
 
-    LogController.begin_track_printAll("analyze");
+    NLULoggerController.begin_track_printAll("analyze");
     if (args[0].equals("compare")) {
       compareLogs(args[1], args[2], args[3]);
     } else if (args[0].equals("diff")) {
@@ -25,7 +25,7 @@ public final class SemparseLogTools {
     if (args[0].equals("result_list")) {
       printResultList(args[1], args[2]);
     }
-    LogController.end_track();
+    NLULoggerController.end_track();
   }
 
   private static void printResultList(String log, String field) {
@@ -153,11 +153,11 @@ public final class SemparseLogTools {
       if (start) {
         if (line.contains("Example:")) {
           if (print && example != null) {
-            LogController.log(example);
-            LogController.log(targetFormula);
-            LogController.log(targetValue);
-            LogController.log(trueDeriv);
-            LogController.log(predDeriv);
+            NLULoggerController.log(example);
+            NLULoggerController.log(targetFormula);
+            NLULoggerController.log(targetValue);
+            NLULoggerController.log(trueDeriv);
+            NLULoggerController.log(predDeriv);
           }
           example = line;
           targetFormula = null; targetValue = null; trueDeriv = null;
@@ -205,11 +205,11 @@ public final class SemparseLogTools {
 
     if (correctnessList1.size() != correctnessList2.size())
       throw new RuntimeException("lists are not same size");
-    LogController.logs("Size of correctness: %s", correctnessList1.size());
+    NLULoggerController.logs("Size of correctness: %s", correctnessList1.size());
 
     for (int i = 0; i < correctnessList1.size(); ++i) {
       if (!correctnessList1.get(i).equals(correctnessList2.get(i))) {
-        LogController.log("example: " + i + " log1: " + correctnessList1.get(i) + " log2: " + correctnessList2.get(i));
+        NLULoggerController.log("example: " + i + " log1: " + correctnessList1.get(i) + " log2: " + correctnessList2.get(i));
       }
     }
   }
@@ -224,7 +224,7 @@ public final class SemparseLogTools {
         int slashIndex = line.indexOf('/');
         int openCurlyIndex = line.indexOf('{');
         numOfIterations = Integer.parseInt(line.substring(slashIndex + 1, openCurlyIndex - 1));
-        LogController.logs("Number of iterations=%s", numOfIterations);
+        NLULoggerController.logs("Number of iterations=%s", numOfIterations);
       }
       if (line.contains("Processing iter=" + numOfIterations + ".dev")) {
         start = true;
