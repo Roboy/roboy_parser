@@ -6,26 +6,30 @@ import java.io.PrintWriter;
 
 public class LogController extends LogInfo {
 
-    private static boolean INFO = true;
+    private static boolean ALL = true;
     private static boolean WARN = true;
 
-    public static void setLogger(int i){
-        if(i==0) {
-            INFO=false;
+    public static void setLogger(String s){
+        if(s.toLowerCase().equals("off")) {
+            ALL =false;
             WARN=false;
             return;
         }
-        if(i==1) {
-            INFO=false;
+        if(s.toLowerCase().equals("warn")) {
+            ALL =false;
             WARN=true ;
             return;
         }
-        if(i==2) {
-            INFO=true;
-            WARN=true;
-            return;
+
+        if(!s.toLowerCase().equals("info")){
+            warning("Invalid Level Passed:\t"+s);
+            warning("Please Check Dialog's Config.Properties. Now Defaulting to INFO");
         }
-        error("Invalid Integer Passed:\t"+i);
+        ALL =true;
+        WARN=true;
+        return;
+
+
     }
 
     public static boolean isWARN() {
@@ -36,57 +40,57 @@ public class LogController extends LogInfo {
         LogController.WARN = WARN;
     }
 
-    public static boolean isINFO() {
-        return INFO;
+    public static boolean isALL() {
+        return ALL;
     }
 
-    public static void setINFO(boolean INFO) {
-        LogController.INFO = INFO;
+    public static void setALL(boolean ALL) {
+        LogController.ALL = ALL;
     }
 
 
     public static void begin_track(String format, Object... args) {
-        if(INFO)LogInfo.begin_track(format, args);
+        if(ALL)LogInfo.begin_track(format, args);
     }
 
     public static void begin_track_printAll(String format, Object... args) {
-        if(INFO)LogInfo.begin_track_printAll(format, args);
+        if(ALL)LogInfo.begin_track_printAll(format, args);
     }
 
     public static void begin_track_general(Object o, boolean printAllChildLines, boolean printIfParentPrinted) {
-        if(INFO)LogInfo.begin_track_general(o, printAllChildLines, printIfParentPrinted);
+        if(ALL)LogInfo.begin_track_general(o, printAllChildLines, printIfParentPrinted);
     }
 
     public static void end_track() {
-        if(INFO)LogInfo.end_track();
+        if(ALL)LogInfo.end_track();
     }
 
     public static <T> T end_track(T x) {
-        if(INFO) return LogInfo.end_track(x);
+        if(ALL) return LogInfo.end_track(x);
         return null;
     }
 
     public static void log(Object o) {
-        if(INFO)LogInfo.log(o);
+        if(ALL)LogInfo.log(o);
     }
 
     public static void logs(String format, Object... args) {
-        if(INFO)LogInfo.logs(format,args);
+        if(ALL)LogInfo.logs(format,args);
     }
 
     public static void setFileOut(PrintWriter newFileOut) {
-        if(INFO) LogInfo.setFileOut(newFileOut);
+        if(ALL) LogInfo.setFileOut(newFileOut);
     }
 
 
 
         public static void dbgs(String format, Object... args) {
-        if(INFO) LogInfo.dbgs(format, args);
+        if(ALL) LogInfo.dbgs(format, args);
     }
 
     public static void dbg(Object o) {
 
-        if(INFO) LogInfo.dbg(o);
+        if(ALL) LogInfo.dbg(o);
     }
 
     public static void error(Object o) {

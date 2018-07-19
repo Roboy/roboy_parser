@@ -4,6 +4,6 @@ import fig.basic.*;
 
 public class StopWatchSetController extends StopWatchSet {
     public static synchronized void logStats() {
-        if(LogController.isINFO()) StopWatchSet.logStats();
+        if(LogController.isALL()) StopWatchSet.logStats();
     }
 }
